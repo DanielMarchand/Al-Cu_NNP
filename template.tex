@@ -1,0 +1,331 @@
+\documentclass{article}
+
+
+\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+\usepackage{lmodern}%
+\usepackage{textcomp}%
+\usepackage{lastpage}%
+% \usepackage[margin=0.5in]{geometry}%
+\usepackage{float}%
+
+
+\title{Accelerated Atomistic Modelling of Aluminum Precipitates: A Case Study with Al-Cu}
+
+\author{
+ Daniel Marchand \\
+  Institute of Materials Science \\
+  École Polytechnique Fédérale de Lausanne \\
+  CH-1015, Vaud, Switzerland \\
+  \texttt{daniel.marchand@epfl.ch} \\
+  %% examples of more authors
+   \And
+ Albert Glensk \\
+  Institute of Mechanical Engineering \\
+  École Polytechnique Fédérale de Lausanne \\
+  CH-1015, Vaud, Switzerland \\
+  \texttt{albert.glensk@epfl.ch} \\
+  \And
+ William Curtin \\
+  Institute of Mechanical Engineering \\
+  École Polytechnique Fédérale de Lausanne \\
+  CH-1015, Vaud, Switzerland \\
+  \texttt{william.curtin@epfl.ch} \\
+  %% \AND
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Precipitates are fundamental to the strengthening of aluminum alloys, and understanding them is paramount for optimized processing. Precipitates are highly complex, and their formation sequence, kinetics, and the resulting influence on mechanical properties must be studied at the atomic scale, particularly during early-stage nucleation and growth.
+Atomistic modeling via Density Functional Theory (DFT) is well-established and has been successful for a wide variety of precipitates; however, it is extremely computationally expensive and typically limited to modeling relatively simple bulk properties. On the contrary, interatomic potentials are computationally affordable, yet tend to lack accuracy. A promising new method for modeling precipitates is through the use of interatomic Neural Network Potentials (NNPs), that have near-DFT accuracy without the massive cost. 
+Here, we present a demonstration of NNPs for Al-Cu based-alloys, their >$\theta$ precipitation sequence being one of the oldest and most investigated in the field, providing a model system for comparison. We demonstrate the high fidelity of the Al-Cu NNPs for predictions of intermetallic compound energetics, elasticity, dilute solid-solution binding, interfaces, generalized stacking fault energy surfaces, and anti-site defect energies. We further show that our NNP can correctly the entropically-induced shift between $\theta'$ and $\theta$, [I AM TENTATIVELY ADDING A KMC SECTION SINCE ABHINAV'S RESULTS SEEM PROMISING] while with Kinetic Monte Carlo we show our NNP can model early-stage GP [AND GP2?] zone formation. This work points to a new and powerful approach for advancing the predictive understanding of Al alloys. 
+\end{abstract}
+
+
+% keywords can be removed
+%\keywords{First keyword \and Second keyword \and More}
+
+
+\section{Introduction}
+The introduction  
+
+
+\bibliographystyle{unsrt}  
+\bibliography{references}  %%% Remove comment to use the external .bib file (using bibtex).
+%%% and comment out the ``thebibliography'' section.
+
+\newpage
+\appendix
+\section{Task description and data construction}
+\label{sec:headings}
+We are provided with five datasets from Kaggle: Sales train, Sale test, items, item categories and shops. In the Sales train dataset, it provides the information about the sales’ number of an item in a shop within a day. In the Sales test dataset, it provides the shop id and item id which are the items and shops we need to predict. In the other three datasets, we can get the information about item’s name and its category, and the shops’ name.
+\paragraph{Task modeling.}
+We approach this task as a regression problem. For every item and shop pair, we need to predict its next month sales(a number).
+\paragraph{Construct train and test data.}
+In the Sales train dataset, it only provides the sale within one day, but we need to predict the sale of next month. So we sum the day's sale into month's sale group by item, shop, date(within a month).
+In the Sales train dataset, it only contains two columns(item id and shop id). Because we need to provide the sales of next month, we add a date column for it, which stand for the date information of next month.
+
+\subsection{Headings: second level}
+\lipsum[5]
+\begin{equation}
+\xi _{ij}(t)=P(x_{t}=i,x_{t+1}=j|y,v,w;\theta)= {\frac {\alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}{\sum _{i=1}^{N} \sum _{j=1}^{N} \alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}}
+\end{equation}
+
+\subsubsection{Headings: third level}
+\lipsum[6]
+
+\paragraph{Paragraph}
+\lipsum[7]
+
+\section{Examples of citations, figures, tables, references}
+\label{sec:others}
+\lipsum[8] \cite{kour2014real,kour2014fast} and see \cite{hadash2018estimate}.
+
+The documentation for \verb+natbib+ may be found at
+\begin{center}
+  \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
+\end{center}
+Of note is the command \verb+\citet+, which produces citations
+appropriate for use in inline text.  For example,
+\begin{verbatim}
+   \citet{hasselmo} investigated\dots
+\end{verbatim}
+produces
+\begin{quote}
+  Hasselmo, et al.\ (1995) investigated\dots
+\end{quote}
+
+\begin{center}
+  \url{https://www.ctan.org/pkg/booktabs}
+\end{center}
+
+
+\subsection{Figures}
+\lipsum[10] 
+See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
+\lipsum[11] 
+
+\begin{figure}
+  \centering
+  \fbox{\rule[-.5cm]{4cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
+  \caption{Sample figure caption.}
+  \label{fig:fig1}
+\end{figure}
+
+\begin{figure} % picture
+    \centering
+    \includegraphics{figures/NOTINOQMD_00002-GSF_111.png}
+\end{figure}
+
+\subsection{Tables}
+\lipsum[12]
+See awesome Table~\ref{tab:table}.
+
+\begin{table}
+ \caption{Sample table title}
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    \multicolumn{2}{c}{Part}                   \\
+    \cmidrule(r){1-2}
+    Name     & Description     & Size ($\mu$m) \\
+    \midrule
+    Dendrite & Input terminal  & $\sim$100     \\
+    Axon     & Output terminal & $\sim$10      \\
+    Soma     & Cell body       & up to $10^6$  \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:table}
+\end{table}
+
+\subsection{Lists}
+\begin{itemize}
+\item Lorem ipsum dolor sit amet
+\item consectetur adipiscing elit. 
+\item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
+\end{itemize}
+
+
+
+%
+%
+%
+\section{Bulk Property Tests \newline%
+}%
+\label{sec:BulkPropertyTests}%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=40px]{./figures/matparam_purestats.png}%
+\caption{Plot of deviation from DFT (\%) for key properties for Al and Cu}%
+\end{figure}
+
+%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/matparam_stats1.png}%
+\caption{Plot of formation energy (meV), atomic volume (Ang$^3$) C$_{11}$, C$_{21}$ and C$_{44}$ (GPa) for all structures in OQMD.}%
+\end{figure}
+
+%
+\section{Solute{-}Solute Tests \newline%
+}%
+\label{sec:Solute{-}SoluteTests}%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/solsol_in_al.png}%
+\caption{Sol{-}Sol binding energy (in meV) in Al matrix}%
+\end{figure}
+
+%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/solsol_in_cu.png}%
+\caption{Sol{-}Sol binding energy (in meV) in Cu matrix}%
+\end{figure}
+
+%
+\section{Interface Energies \newline%
+}%
+\label{sec:InterfaceEnergies}%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/interface_energies.png}%
+\caption{TODO: Interface caption}%
+\end{figure}
+
+%
+\section{GSF Tests \newline%
+}%
+\label{sec:GSFTests}%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/NOTINOQMD_00002-GSF_111.png}%
+\caption{GSF energy for key sites on the 111 surface of  $\theta''$.These sites are not included in the  training set for NNP}%
+\end{figure}
+
+%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/NOTINOQMD_00001-GSF_0m11.png}%
+\caption{GSF energy for key sites on the 0-11 surface of  $\theta$. These sites are included in the training set for NNP}%
+\end{figure}
+
+%
+\section{Antisite Tests \newline%
+}%
+\label{sec:AntisiteTests}%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/antisite_plot.png}%
+\caption{Antisite energies}%
+\end{figure}
+
+%
+\section{Appendix \newline%
+}%
+\label{sec:Appendix}%
+Pure Bulk \newline%
+%
+\begin{tabular}{l|lll|lll}%
+\hline%
+Structure&\multicolumn{3}{c}{FCC Al}&\multicolumn{3}{c}{FCC Cu}\\%
+Method&DFT&NNP&ADP&DFT&NNP&ADP\\%
+\hline%
+a ($\AA$)&4.04&4.047&4.05&3.625&3.627&3.615\\%
+vol/atom ($\AA^3$)&16.48&16.58&16.61&11.9&11.93&11.81\\%
+G (GPa)&30.7&33.0&29.6&59.4&62.6&55.3\\%
+K (GPa)&78.2&77.2&78.5&143.9&146.3&138.9\\%
+$C_{11}$ (GPa)&112.5&110.6&113.5&180.3&182.4&170.4\\%
+$C_{21}$ (GPa)&61.0&60.5&61.1&125.7&128.2&123.2\\%
+$C_{44}$ (GPa)&34.0&38.2&31.9&80.8&86.3&76.5\\%
+\hline%
+\end{tabular}%
+\newline%
+\newline%
+\newline%
+\newline%
+%
+Precipitate bulk \newline%
+%
+\begin{tabular}{l|ccc|ccc|ccc}%
+\hline%
+Structure&\multicolumn{3}{c}{Al$_2$Cu  $\theta$}&\multicolumn{3}{c}{Al$_2$Cu $\theta'$}&\multicolumn{3}{c}{Al$_3$Cu $\theta''$}\\%
+Method&DFT&NNP&ADP&DFT&NNP&ADP&DFT&NNP&ADP\\%
+\hline%
+a ($\AA$)&4.869&4.917&4.862&4.087&4.095&3.994&2.804&2.792&2.784\\%
+b ($\AA$)&4.926&4.929&4.862&4.087&4.095&3.994&2.804&2.792&2.784\\%
+c ($\AA$)&4.926&4.929&4.862&4.087&4.095&3.994&7.65&7.65&7.586\\%
+$\alpha$&75.9&75.6&75.2&60.0&60.0&60.0&90.0&90.0&90.0\\%
+$\beta$&60.4&60.1&75.2&60.0&60.0&60.0&90.0&90.0&90.0\\%
+$\gamma$&60.4&60.1&60.6&60.0&60.0&60.0&90.0&90.0&90.0\\%
+vol/atom ($\AA^3$)&14.88&14.95&14.41&16.09&16.18&15.02&15.04&14.9&14.69\\%
+$\Delta$$H^{comp}$ (meV/atom)&{-}161.6&{-}162.9&{-}189.8&{-}184.0&{-}184.0&{-}202.6&{-}94.2&{-}94.8&{-}128.8\\%
+G (GPa)&42.3&39.3&57.5&56.6&56.5&44.1&48.8&40.6&32.6\\%
+K (GPa)&100.8&115.7&154.5&97.0&96.8&138.6&94.3&89.5&84.9\\%
+$C_{11}$ (GPa)&170.4&167.8&199.5&158.7&160.4&192.4&160.5&148.6&115.4\\%
+$C_{22}$ (GPa)&170.4&167.8&199.5&158.7&160.4&192.4&160.5&148.6&115.4\\%
+$C_{33}$ (GPa)&174.8&180.4&278.2&158.7&160.4&192.4&181.8&154.1&142.0\\%
+$C_{44}$ (GPa)&28.8&37.0&80.0&63.5&62.3&46.5&45.8&32.4&38.2\\%
+$C_{55}$ (GPa)&28.8&37.0&80.0&63.5&62.3&46.5&45.8&32.4&38.2\\%
+$C_{66}$ (GPa)&47.5&38.1&21.0&63.5&62.3&46.5&42.2&46.6&27.4\\%
+$C_{21}$ (GPa)&73.7&104.2&99.3&66.2&64.9&111.6&70.9&61.6&48.0\\%
+$C_{31}$ (GPa)&61.1&79.2&128.7&66.2&64.9&111.6&51.1&57.6&73.8\\%
+$C_{32}$ (GPa)&61.1&79.2&128.7&66.2&64.9&111.6&51.1&57.6&73.8\\%
+\hline%
+\end{tabular}%
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/bulk_boxplot.png}%
+\caption{Deviation(\%) from DFT over OQMD structures. Box plot settings such that 50\% of the data is contained in the box and 95\% of the data is between the "whiskers". The median is marked an orange line. Outliers (i.e. the bottom 2.5\% and top 2.5\% of the data) are marked with circles}%
+\end{figure}
+
+%
+%%% Comment out this section when you \bibliography{references} is enabled.
+
+
+\end{document}
