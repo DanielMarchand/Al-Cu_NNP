@@ -24,6 +24,8 @@
 \usepackage[export]{adjustbox}
 \usepackage[numbers]{natbib}
 \usepackage{listings}
+\usepackage{minted}
+\usemintedstyle{vs}
 
 
 \title{Accelerated Atomistic Modelling of Aluminum Precipitates: A Case Study with Al-Cu}
@@ -119,7 +121,8 @@ In any case, we find that our potential is highly performant when one is conside
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.2\textwidth,center]{./figures/matparam_purestats.png}%
-\caption{Deviation of NNP and ADP from DFT (\%) for fundamental properties for Al and Cu}%
+\caption{Deviation of NNP and ADP from DFT (\%) for fundamental properties for Al and Cu. 
+Relevant structures are included in the training set. }%
 \label{fig:matparam_purestats}
 \end{figure}
 The NNP outperforms ADP for formation energy, atomic volume, and elastic constants for most OQMD structures, as can be seen in Figure \ref{fig:matparam_stats1}.
@@ -136,7 +139,8 @@ ADP predicts B2 to be extremely stable, while it has the highest error for any s
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.2\textwidth,center]{figures/matparam_stats1.png}%
-\caption{Comparison of: formation energy (meV), atomic volume (Ang$^3$), elastic constants C$_{11}$, C$_{21}$ and C$_{44}$ (GPa) across NNP, ADP and DFT for all structures in the OQMD.}
+\caption{Comparison of: formation energy (meV), atomic volume (Ang$^3$), elastic constants C$_{11}$, C$_{21}$ and C$_{44}$ (GPa) across NNP, ADP and DFT for all structures in the OQMD. 
+Relevant structures are included in the training set. }
 \label{fig:matparam_stats1}
 \end{figure}
 
@@ -153,13 +157,14 @@ Errors for NNP are typically in the 20-30 meV range, and values requiring greate
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.2\textwidth,center]{./figures/solsol_in_al.png}%
-\caption{Neighbor index vs binding energy $E_{bind}$ for Cu-Cu, Cu-Vac and Vac-Vac in Al matrix.}%
+\caption{Neighbor index vs binding energy $E_{bind}$ for Cu-Cu, Cu-Vac and Vac-Vac in Al matrix. 
+Relevant structures are included in the training set.}%
 \label{fig:solsol_in_al}
 \end{figure}
 
 \textcolor{red}{Not yet sure whether geometry has a separate section or not}.
 In this work, the coherent and semi-coherent versions of the $\theta''$ and $\theta'$ interfaces were studied while $\theta$ was omitted since it only forms incoherent interfaces \cite{Nie2014PhysicalAlloys}.
-We constructed these interfaces by taking their OQMD entries and stacking them on the Al matrix using the ASE \textcolor{red}{build.stack} command.
+We constructed these interfaces by taking their OQMD entries and stacking them on the Al matrix using the ASE \mintinline{python}{ase.build.stack} command.
 During relaxation, atoms are free to move, but the cell is held fixed. 
 Reference images for these interfaces are included in \textcolor{red}{Figure XX} in the supplementary.
 
@@ -184,8 +189,19 @@ However, our representative NNP has high quantitative accuracy on all these inte
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.2\textwidth,center]{./figures/interface_energies.png}%
-\caption{Interface structure vs interface energy for precipitate structures}%
+\caption{Interface structure vs interface energy for precipitate structures. 
+These are the $\theta'$ coherent, $\theta'$ semi-coherent, $\theta''$ coherent and $\theta''$ semi-coherent
+interfaces in order. Relevant structures are included in the training set.}%
 \label{fig:interface_energies}
+\end{figure}
+
+\textcolor{red}{GSF SECTION GOES HERE}
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=540px]{./figures/antisite_plot.png}%
+\caption{DFT antisite formation energy vs ADP/NNP antisite formation energy.
+These structures were not included in the training set.}%
 \end{figure}
 
 \newpage
@@ -216,11 +232,6 @@ However, our representative NNP has high quantitative accuracy on all these inte
 \caption{GSF energy for key sites on the 0-11 surface of  $\theta$. These sites are included in the training set for NNP}%
 \end{figure}
 
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=540px]{./figures/antisite_plot.png}%
-\caption{Antisite energies}%
-\end{figure}
 
 \begin{tabular}{l|lll|lll}%
 \hline%
