@@ -20,6 +20,9 @@
 \usepackage{lastpage}%
 % \usepackage[margin=0.5in]{geometry}%
 \usepackage{float}%
+\usepackage{xcolor}
+\usepackage[export]{adjustbox}
+\usepackage[numbers]{natbib}
 
 
 \title{Accelerated Atomistic Modelling of Aluminum Precipitates: A Case Study with Al-Cu}
@@ -63,9 +66,14 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Precipitates are fundamental to the strengthening of aluminum alloys, and understanding them is paramount for optimized processing. Precipitates are highly complex, and their formation sequence, kinetics, and the resulting influence on mechanical properties must be studied at the atomic scale, particularly during early-stage nucleation and growth.
+Precipitates are fundamental to the strengthening of aluminum alloys, and understanding them is paramount for optimized processing.
+Precipitates are highly complex, and their formation sequence, kinetics, and the resulting influence on mechanical properties must be studied at the atomic scale, particularly during early-stage nucleation and growth.
 Atomistic modeling via Density Functional Theory (DFT) is well-established and has been successful for a wide variety of precipitates; however, it is extremely computationally expensive and typically limited to modeling relatively simple bulk properties. On the contrary, interatomic potentials are computationally affordable, yet tend to lack accuracy. A promising new method for modeling precipitates is through the use of interatomic Neural Network Potentials (NNPs), that have near-DFT accuracy without the massive cost. 
-Here, we present a demonstration of NNPs for Al-Cu based-alloys, their >$\theta$ precipitation sequence being one of the oldest and most investigated in the field, providing a model system for comparison. We demonstrate the high fidelity of the Al-Cu NNPs for predictions of intermetallic compound energetics, elasticity, dilute solid-solution binding, interfaces, generalized stacking fault energy surfaces, and anti-site defect energies. We further show that our NNP can correctly the entropically-induced shift between $\theta'$ and $\theta$, [I AM TENTATIVELY ADDING A KMC SECTION SINCE ABHINAV'S RESULTS SEEM PROMISING] while with Kinetic Monte Carlo we show our NNP can model early-stage GP [AND GP2?] zone formation. This work points to a new and powerful approach for advancing the predictive understanding of Al alloys. 
+Here, we present a demonstration of NNPs for Al-Cu based-alloys, their >$\theta$ precipitation sequence being one of the oldest and most investigated in the field, providing a model system for comparison.
+We demonstrate the high fidelity of the Al-Cu NNPs for predictions of intermetallic compound energetics, elasticity, dilute solid-solution binding, interfaces, generalized stacking fault energy surfaces, and anti-site defect energies.
+We further show that our NNP can correctly the entropically-induced shift between $\theta'$ and $\theta$, 
+\textcolor{red}{I AM TENTATIVELY ADDING A KMC SECTION SINCE ABHINAV'S RESULTS SEEM PROMISING} while with Kinetic Monte Carlo we show our NNP can model early-stage GP \textcolor{red}{AND GP2?} zone formation.
+This work points to a new and powerful approach for advancing the predictive understanding of Al alloys. 
 \end{abstract}
 
 
@@ -75,6 +83,63 @@ Here, we present a demonstration of NNPs for Al-Cu based-alloys, their >$\theta$
 
 \section{Introduction}
 The introduction  \cite{Kobayashi2017}
+
+\section{Methodology}
+NOTE: I probably don't need the actual subsection headers. 
+\subsection{DFT Training Set Generation}
+\subsection{NNP selection and Evaluation of Errors}
+In this work, we trained several NNPs (N=40) to estimate expected errors. We selected the NNP with the lowest error for $C_{44}$ in Aluminum to be the single representative example because of the importance and relative difficulty, as will be discussed later, of modeling $C_{44}$ correctly. All error bars center on the average of all trained NNPs and extends their standard deviation outwards. Thus, the representative NNP, i.e., the NNP with the closest $C_{44}$ to DFT, is not always close to the error bar center, nor does it always lie within the error bars. 
+\subsection{Atomic Structures}
+The Open Quantum Materials Database \cite{Kirklin2015} was the primary source of structures used when training and
+testing the NNP across a broad range of Al-Cu compounds. $\theta$ and $\theta''$ were not in the OQMD, and we
+included them as well manually for a total of 62 structures. Each of these structures was then fully relaxed, 
+both in cell dimensions and atomic positions. Because we wished to avoid testing duplicates, only structures 
+that retained the same symmetry group before and after relaxation were explicitly compared against the ADP and NNP
+potentials (N=47). The elastic tensor was computed similarly to \cite{DeJong2015}, where a finite set of strains were
+applied and fitted to the associated stresses. The pymatgen package\cite{Ong2013} determined the minimal number of
+deformations required for each structure based on its symmetry, and only these were used. 
+Unless stated otherwise, we computed formation energies using FCC Al and FCC Cu as the corresponding ground states. 
+
+\textcolor{red}{We made heavy use of the atomic simulation environment for the generation of structures, and for evaulating energies using ADP and NNP \cite{HjorthLarsen2017}}
+
+\section{Results and Discussion}
+\subsection{NNP Evaluation}
+\textcolor{red}{TODO: here place the a plot of DFT vs NNP structure energies.
+In our test the validation error was much much higher than the training error.
+You will need to explain this due to outliers, and discuss their relevancy. }
+
+Figure \ref{fig:matparam_purestats} shows the performance of NNP and ADP against DFT on fundamental properties: lattice and elastic constants, surface and stacking fault energies, for pure Al and Cu.
+For most of these properties, NNP shows little or no advantage relative to ADP, the sole exception being stable stacking fault energies in aluminum.
+Troublingly, the $C_{44}$ values of aluminum are substantially and statistically different from those of DFT.
+This error is not entirely unusual for NNPs, and prior work has found errors of a similar magnitude\cite{Zuo2020APotentials}.
+On theoretical grounds, elastic constants are a function of the second derivative of energy, and one should expect to be correspondingly much harder to accurately model when training primarily on energies.
+Because we have used a very dense kpoint mesh, and we have systematically used the same settings, we do not expect this error in $C_{44}$ to be due to issues in the underlying training set, as was found to be a critical factor for a machine-learning we potential based on iron \cite{Dragoni2018AchievingIron}.  
+In any case, we find that our potential is highly performant when one is considering a broad range of structures, or when one is evaluating energetics of complex geometries. 
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1.2\textwidth,center]{./figures/matparam_purestats.png}%
+\caption{Deviation of NNP and ADP from DFT (\%) for fundamental properties for Al and Cu}%
+\label{fig:matparam_purestats}
+\end{figure}
+The NNP outperforms ADP for formation energy, atomic volume, and elastic constants for most OQMD structures, as can be seen in Figure \ref{fig:matparam_stats1}.
+Formation energy is particularly well-handled by the NNP, with most errors well within a few meV/atom, while ADP often highly overestimates or underestimates the formation energy;
+in a few cases, ADP reverses the sign, i.e., predicting stable compounds as unstable and vice versa.
+However, for structures with high formation energy, both the NNP and ADP tend to struggle, often they do not end up relaxing to the same structure as DFT, or they have substantial errors.
+ADP regularly underestimates the atomic volume, even for critical structures: $\theta$ and $\theta'$ errors can be substantial, see \textcolor{red}{supplamentary table}.
+For elastic constants, we see that neither ADP nor NNP performs ideally.
+ADP does a reasonable job of capturing the precipitate structures and outperforms NNP on pure aluminum.
+However, we see that ADP often makes quite substantial errors in the elastic constants for intermediate compounds, while this is less the case for NNP. Interestingly it seems that the B2 structure poses a challenge to both ADP and most NNP.
+ADP predicts B2 to be extremely stable, while it has the highest error for any stable compound for NNP. 
+
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1.2\textwidth,center]{figures/matparam_stats1.png}%
+\caption{Comparison of: formation energy (meV), atomic volume (Ang$^3$), elastic constants C$_{11}$, C$_{21}$ and C$_{44}$ (GPa) across NNP, ADP and DFT for all structures in the OQMD.}
+\label{fig:matparam_stats1}
+\end{figure}
+
 
 
 \bibliographystyle{unsrt}  
@@ -141,7 +206,8 @@ See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of th
 
 \begin{figure} % picture
     \centering
-    \includegraphics{figures/NOTINOQMD_00002-GSF_111.png}
+    \includegraphics{figures/NOTINOQMD_00002-GSF_111.png}{}
+    \label{fig:NOTINOQMD_00002}
 \end{figure}
 
 \subsection{Tables}
@@ -181,21 +247,9 @@ See awesome Table~\ref{tab:table}.
 }%
 \label{sec:BulkPropertyTests}%
 
-
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=40px]{./figures/matparam_purestats.png}%
-\caption{Plot of deviation from DFT (\%) for key properties for Al and Cu}%
-\end{figure}
-
 %
 
 
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=540px]{./figures/matparam_stats1.png}%
-\caption{Plot of formation energy (meV), atomic volume (Ang$^3$) C$_{11}$, C$_{21}$ and C$_{44}$ (GPa) for all structures in OQMD.}%
-\end{figure}
 
 %
 \section{Solute{-}Solute Tests \newline%
