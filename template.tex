@@ -23,6 +23,7 @@
 \usepackage{xcolor}
 \usepackage[export]{adjustbox}
 \usepackage[numbers]{natbib}
+\usepackage{listings}
 
 
 \title{Accelerated Atomistic Modelling of Aluminum Precipitates: A Case Study with Al-Cu}
@@ -88,25 +89,24 @@ The introduction  \cite{Kobayashi2017}
 NOTE: I probably don't need the actual subsection headers. 
 \subsection{DFT Training Set Generation}
 \subsection{NNP selection and Evaluation of Errors}
-In this work, we trained several NNPs (N=40) to estimate expected errors. We selected the NNP with the lowest error for $C_{44}$ in Aluminum to be the single representative example because of the importance and relative difficulty, as will be discussed later, of modeling $C_{44}$ correctly. All error bars center on the average of all trained NNPs and extends their standard deviation outwards. Thus, the representative NNP, i.e., the NNP with the closest $C_{44}$ to DFT, is not always close to the error bar center, nor does it always lie within the error bars. 
+In this work, we trained several NNPs (N=40) to estimate expected errors. We selected the NNP with the lowest error for $C_{44}$ in aluminum to be the single representative example because of the importance and relative difficulty, as will be discussed later, of modeling $C_{44}$ correctly. All error bars center on the average of all trained NNPs and extends their standard deviation outwards. Thus, the representative NNP, i.e., the NNP with the closest $C_{44}$ to DFT, is not always close to the error bar center, nor does it always lie within the error bars. 
 \subsection{Atomic Structures}
 The Open Quantum Materials Database \cite{Kirklin2015} was the primary source of structures used when training and
 testing the NNP across a broad range of Al-Cu compounds. $\theta$ and $\theta''$ were not in the OQMD, and we
 included them as well manually for a total of 62 structures. Each of these structures was then fully relaxed, 
-both in cell dimensions and atomic positions. Because we wished to avoid testing duplicates, only structures 
-that retained the same symmetry group before and after relaxation were explicitly compared against the ADP and NNP
+both in cell dimensions and atomic positions. Because we wished to avoid testing duplicates, only structures that retained the same symmetry group before and after relaxation were explicitly compared against the ADP and NNP
 potentials (N=47). The elastic tensor was computed similarly to \cite{DeJong2015}, where a finite set of strains were
 applied and fitted to the associated stresses. The pymatgen package\cite{Ong2013} determined the minimal number of
 deformations required for each structure based on its symmetry, and only these were used. 
 Unless stated otherwise, we computed formation energies using FCC Al and FCC Cu as the corresponding ground states. 
 
-\textcolor{red}{We made heavy use of the atomic simulation environment for the generation of structures, and for evaulating energies using ADP and NNP \cite{HjorthLarsen2017}}
+\textcolor{red}{We made heavy use of the atomic simulation environment for the generation of structures, and for evaluating energies using ADP and NNP \cite{HjorthLarsen2017}}
 
 \section{Results and Discussion}
 \subsection{NNP Evaluation}
 \textcolor{red}{TODO: here place the a plot of DFT vs NNP structure energies.
-In our test the validation error was much much higher than the training error.
-You will need to explain this due to outliers, and discuss their relevancy. }
+In our test, the validation error was much much higher than the training error.
+You will need to explain this due to outliers and discuss their relevancy. }
 
 Figure \ref{fig:matparam_purestats} shows the performance of NNP and ADP against DFT on fundamental properties: lattice and elastic constants, surface and stacking fault energies, for pure Al and Cu.
 For most of these properties, NNP shows little or no advantage relative to ADP, the sole exception being stable stacking fault energies in aluminum.
@@ -140,154 +140,68 @@ ADP predicts B2 to be extremely stable, while it has the highest error for any s
 \label{fig:matparam_stats1}
 \end{figure}
 
+The binding energies for Cu, Al, and Vacancy in Al or Cu matrix was computed with following:
+\begin{equation}
+E_{bind} = E^{2sol}_{N-2,X,Y}-E^{1sol}_{N-1,X}-E^{1sol}_{N-1,Y}+E^{pure}_N
+\end{equation}
+The results for Al matrix are displayed in Figure \ref{fig:solsol_in_al} while those for Cu matrix are contained in the \textcolor{red}{Figure S \ref{fig:solsol_in_cu}}.
+For the solute binding, we see that the NNP, while not always ideal, more closely matches DFT.
+Particularly for dilute Cu-Cu binding, ADP falsely predicts massive overbinding for near neighbors and massive repulsion for further neighbors, while NNP maintains quantitative accuracy.
+Errors for NNP are typically in the 20-30 meV range, and values requiring greater precision than this would not be appropriate for NNP.
 
 
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1.2\textwidth,center]{./figures/solsol_in_al.png}%
+\caption{Neighbor index vs binding energy $E_{bind}$ for Cu-Cu, Cu-Vac and Vac-Vac in Al matrix.}%
+\label{fig:solsol_in_al}
+\end{figure}
+
+\textcolor{red}{Not yet sure whether geometry has a separate section or not}.
+In this work, the coherent and semi-coherent versions of the $\theta''$ and $\theta'$ interfaces were studied while $\theta$ was omitted since it only forms incoherent interfaces \cite{Nie2014PhysicalAlloys}.
+We constructed these interfaces by taking their OQMD entries and stacking them on the Al matrix using the ASE \textcolor{red}{build.stack} command.
+During relaxation, atoms are free to move, but the cell is held fixed. 
+Reference images for these interfaces are included in \textcolor{red}{Figure XX} in the supplementary.
+
+We computed the interface energy in the same manner as in \cite{Vaithyanathan2004MultiscaleAlloys}, and we only briefly summarize the method here.
+The formation energy for an interface with N atoms of which X are of the matrix and Y are of the precipitate,
+$H^{int}f_{X,Y} = E^{int}_{X,Y}-XE^{Matrix}_{bulk}-YE^{Precip}_{bulk}$,
+is related to the number of atoms in the following equation. 
+\begin{equation}
+H^{int}f = \delta E_{strain} + \frac{2A\gamma^{int}}{N}
+\end{equation}
+Where $H^{int}f$ is the interface formation energy, $\delta E_{strain}$ is the strain energy, $A$ the surface area,
+$\gamma^{int}$ the interface energy, and N the total number of atoms in interface.
+The interface energy $\gamma^{int}$ is then the slope of $\frac{1}{N}$ against $H^{int}f$, divided by $2A$.
+We calculated the slope using three different sizes of the $\theta'$ structures and four different sizes of $\theta''$ structures, starting with a minimum of one precipitate layer and two Al layers and incriminating onward in size. 
+
+Figure \ref{fig:interface_energies} plots the results of the interface energy calculations.
+ADP correctly predicts the general trends but makes several serious errors.
+The coherent $\theta'$ interface has much too high an energy, while all the $\theta''$ interface is predicted to have negative energy.
+The $\theta''$ interface is particularly challenging because it has such low interface energy; therefore, it is easy for the potential to predict this to be negative rather than positive.
+However, our representative NNP has high quantitative accuracy on all these interfaces.
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1.2\textwidth,center]{./figures/interface_energies.png}%
+\caption{Interface structure vs interface energy for precipitate structures}%
+\label{fig:interface_energies}
+\end{figure}
+
+\newpage
 \bibliographystyle{unsrt}  
 \bibliography{references}  %%% Remove comment to use the external .bib file (using bibtex).
 %%% and comment out the ``thebibliography'' section.
 
 \newpage
 \appendix
-\section{Task description and data construction}
-\label{sec:headings}
-We are provided with five datasets from Kaggle: Sales train, Sale test, items, item categories and shops. In the Sales train dataset, it provides the information about the sales’ number of an item in a shop within a day. In the Sales test dataset, it provides the shop id and item id which are the items and shops we need to predict. In the other three datasets, we can get the information about item’s name and its category, and the shops’ name.
-\paragraph{Task modeling.}
-We approach this task as a regression problem. For every item and shop pair, we need to predict its next month sales(a number).
-\paragraph{Construct train and test data.}
-In the Sales train dataset, it only provides the sale within one day, but we need to predict the sale of next month. So we sum the day's sale into month's sale group by item, shop, date(within a month).
-In the Sales train dataset, it only contains two columns(item id and shop id). Because we need to provide the sales of next month, we add a date column for it, which stand for the date information of next month.
-
-\subsection{Headings: second level}
-\lipsum[5]
-\begin{equation}
-\xi _{ij}(t)=P(x_{t}=i,x_{t+1}=j|y,v,w;\theta)= {\frac {\alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}{\sum _{i=1}^{N} \sum _{j=1}^{N} \alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}}
-\end{equation}
-
-\subsubsection{Headings: third level}
-\lipsum[6]
-
-\paragraph{Paragraph}
-\lipsum[7]
-
-\section{Examples of citations, figures, tables, references}
-\label{sec:others}
-\lipsum[8] \cite{kour2014real,kour2014fast} and see \cite{hadash2018estimate}.
-
-The documentation for \verb+natbib+ may be found at
-\begin{center}
-  \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
-Of note is the command \verb+\citet+, which produces citations
-appropriate for use in inline text.  For example,
-\begin{verbatim}
-   \citet{hasselmo} investigated\dots
-\end{verbatim}
-produces
-\begin{quote}
-  Hasselmo, et al.\ (1995) investigated\dots
-\end{quote}
-
-\begin{center}
-  \url{https://www.ctan.org/pkg/booktabs}
-\end{center}
-
-
-\subsection{Figures}
-\lipsum[10] 
-See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
-\lipsum[11] 
-
-\begin{figure}
-  \centering
-  \fbox{\rule[-.5cm]{4cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-  \caption{Sample figure caption.}
-  \label{fig:fig1}
-\end{figure}
-
-\begin{figure} % picture
-    \centering
-    \includegraphics{figures/NOTINOQMD_00002-GSF_111.png}{}
-    \label{fig:NOTINOQMD_00002}
-\end{figure}
-
-\subsection{Tables}
-\lipsum[12]
-See awesome Table~\ref{tab:table}.
-
-\begin{table}
- \caption{Sample table title}
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    \multicolumn{2}{c}{Part}                   \\
-    \cmidrule(r){1-2}
-    Name     & Description     & Size ($\mu$m) \\
-    \midrule
-    Dendrite & Input terminal  & $\sim$100     \\
-    Axon     & Output terminal & $\sim$10      \\
-    Soma     & Cell body       & up to $10^6$  \\
-    \bottomrule
-  \end{tabular}
-  \label{tab:table}
-\end{table}
-
-\subsection{Lists}
-\begin{itemize}
-\item Lorem ipsum dolor sit amet
-\item consectetur adipiscing elit. 
-\item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
-\end{itemize}
-
-
-
-%
-%
-%
-\section{Bulk Property Tests \newline%
-}%
-\label{sec:BulkPropertyTests}%
-
-%
-
-
-
-%
-\section{Solute{-}Solute Tests \newline%
-}%
-\label{sec:Solute{-}SoluteTests}%
-
-
+\section{Supplementary}
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=540px]{./figures/solsol_in_al.png}%
-\caption{Sol{-}Sol binding energy (in meV) in Al matrix}%
+\includegraphics[width=1.2\textwidth,center]{./figures/solsol_in_cu.png}%
+\caption{Neighbor index vs binding energy $E_{bind}$ for Al-Al, Al-Vac and Vac-Vac in Cu matrix.}%
+\label{fig:solsol_in_cu}
 \end{figure}
-
-%
-
-
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=540px]{./figures/solsol_in_cu.png}%
-\caption{Sol{-}Sol binding energy (in meV) in Cu matrix}%
-\end{figure}
-
-%
-\section{Interface Energies \newline%
-}%
-\label{sec:InterfaceEnergies}%
-
-
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=540px]{./figures/interface_energies.png}%
-\caption{TODO: Interface caption}%
-\end{figure}
-
-%
-\section{GSF Tests \newline%
-}%
-\label{sec:GSFTests}%
 
 
 \begin{figure}[H]%
@@ -296,20 +210,11 @@ See awesome Table~\ref{tab:table}.
 \caption{GSF energy for key sites on the 111 surface of  $\theta''$.These sites are not included in the  training set for NNP}%
 \end{figure}
 
-%
-
-
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=540px]{./figures/NOTINOQMD_00001-GSF_0m11.png}%
 \caption{GSF energy for key sites on the 0-11 surface of  $\theta$. These sites are included in the training set for NNP}%
 \end{figure}
-
-%
-\section{Antisite Tests \newline%
-}%
-\label{sec:AntisiteTests}%
-
 
 \begin{figure}[H]%
 \centering%
@@ -317,12 +222,6 @@ See awesome Table~\ref{tab:table}.
 \caption{Antisite energies}%
 \end{figure}
 
-%
-\section{Appendix \newline%
-}%
-\label{sec:Appendix}%
-Pure Bulk \newline%
-%
 \begin{tabular}{l|lll|lll}%
 \hline%
 Structure&\multicolumn{3}{c}{FCC Al}&\multicolumn{3}{c}{FCC Cu}\\%
@@ -341,9 +240,7 @@ $C_{44}$ (GPa)&34.0&38.2&31.9&80.8&86.3&76.5\\%
 \newline%
 \newline%
 \newline%
-%
-Precipitate bulk \newline%
-%
+
 \begin{tabular}{l|ccc|ccc|ccc}%
 \hline%
 Structure&\multicolumn{3}{c}{Al$_2$Cu  $\theta$}&\multicolumn{3}{c}{Al$_2$Cu $\theta'$}&\multicolumn{3}{c}{Al$_3$Cu $\theta''$}\\%
@@ -371,15 +268,6 @@ $C_{32}$ (GPa)&61.1&79.2&128.7&66.2&64.9&111.6&51.1&57.6&73.8\\%
 \hline%
 \end{tabular}%
 
-
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=540px]{./figures/bulk_boxplot.png}%
-\caption{Deviation(\%) from DFT over OQMD structures. Box plot settings such that 50\% of the data is contained in the box and 95\% of the data is between the "whiskers". The median is marked an orange line. Outliers (i.e. the bottom 2.5\% and top 2.5\% of the data) are marked with circles}%
-\end{figure}
-
-%
-%%% Comment out this section when you \bibliography{references} is enabled.
 
 
 \end{document}
