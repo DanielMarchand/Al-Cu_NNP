@@ -85,7 +85,30 @@ This work points to a new and powerful approach for advancing the predictive und
 
 
 \section{Introduction}
-The introduction  \cite{Kobayashi2017}
+Aluminum is one of the critical materials in the modern world.
+Pure Aluminum is almost useless because of its low yield point\cite{Nie2014PhysicalAlloys}; defects are what give Aluminum its utility, its strength.
+Precipitates are, arguably, the most essential, and most complex defects for understanding Aluminum's mechanical properties.
+Heat is almost always needed to obtain the optimal type and size of precipitates, so much heat, that aluminum production is one of the largest energy-consumers of the planet\cite{Raabe2019StrategiesMetals}.
+It is not trivial to predict the amount of heat needed, or even the concentration of elements to add, as the mechanical properties are the unique function of dozens of alloying elements and innumerable processing conditions.
+
+Good atomic models are essential in the study of aluminum precipitates, firstly, because the initial formation of precipitates involves small clusters of atoms, too small to be viewed with ease in experiments.
+Secondly, because the interactions between dislocations and small precipitates are discrete, and does not readily lend itself to continuum modeling.
+The challenge is to find atomic models that are both accurate and fast.
+Density Functional Theory (DFT) is very accurate, but incredibly slow modeling more than a few hundred atoms in DFT is exceptionally challenging\cite{Martin2004}.
+Atomic potentials are fast, but often inaccurate, it is challenging to have atomic potentials model all of the properties relevant to precipitate formation, growth, and influence on mechanical properties[REF].
+
+In this work, we focus on Al-Cu as a case study for atomic modeling.
+It has been well-studied for a long time\cite{Preston1938StructureAlloys}, thus making it nicely comparable for benchmarks.
+Furthermore, it exhibits several properties that are challenging to model, notably the entropically-driven $\theta'$→ $\theta$ transformation \cite{Wolverton2001b}.
+
+Apostol and Mishin created an Angular Dependent Potential (ADP) for Al-Cu systems.
+In their work, they focused on modeling: formation energies, lattice constants, elastic constants, surface energies, and generalized stacking fault energies\cite{Apostol2011}.
+The potential became very popular and was used in numerous studies of mechanical behavior of precipitates,
+in studying solute and precipitate strengthening\cite{Singh2013AnAlloy}\cite{Esteban-Manzanares2019}\cite{Wu2020AtomisticAlloys}.
+Work by Kobayashi et al. \cite{Kobayashi2017} studied Al-Mg-Si with Neural Network Potentials (NNPs), and they had found excellent results in modeling precipitate-relevant properties beyond what was possible with other potentials for that system.
+
+Our goal in this work was to attempt to construct an NNP that would improve state of the art in precipitate modeling, where we use ADP a comparison.
+We carefully, systematically examined all the atomic-level properties that would be relevant to precipitate modeling: solute/vacancy interactions, formation energies, elastic constants, interface energies, generalized stacking fault energies and the as-mentioned entropic stability of $\theta'$ over $\theta$ phase.
 
 \section{Methodology}
 NOTE: I probably don't need the actual subsection headers. 
@@ -197,11 +220,32 @@ interfaces in order. Relevant structures are included in the training set.}%
 
 \textcolor{red}{GSF SECTION GOES HERE}
 
+Antisites were computed for every OQMD structure in the following manner.
+Firstly, the structure was allowed to be completely relaxed.
+If the structure maintained the same symmetry group after full cell and atomic relaxation, we analyzed it for unique atomic sites using pymatgen.
+Then the cell was duplicated, such as to generate cells with a minimum of 108 atoms to minimize defect-defect interactions.
+For each of the unique sites identified, we then swapped it with the different atom, e.g., Al->Cu or Cu->Al, else we deleted the site to generate a vacancy and stored the antisite structure.
+The energies of all antisite structures were calculated without relaxation.
+This equation gave the antisite formation energies $H^{anti}f$:
+\begin{equation}
+H^{anti}f = E_{anti} - E_{pristine} - \sum\Delta n_i E^{bulk}_i
+\end{equation}
+Where $E_{anti}$, $E_{pristine}$ are the total energies of the antisite, and pristine structure, $n_i$ is the 
+number and sign of the swapped atoms, and $E^{bulk}_i$ their groundstate energy of the bulk compound, i.e., FCC for 
+both Cu and Al.
+
+Figure \ref{fig:antisite_plot} shows the antisite results.
+NNP attains excellent accuracy despite the lack of training data.
+Error bars rarely exceed 5meV and are almost always centered around the correct DFT value.
+ADP also performs reasonably but has substantially more errors, with many samples deviating more than 10meV/atom from DFT. 
+
+
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=540px]{./figures/antisite_plot.png}%
+\includegraphics[width=1.2\textwidth,center]{./figures/antisite_plot.png}%
 \caption{DFT antisite formation energy vs ADP/NNP antisite formation energy.
 These structures were not included in the training set.}%
+\label{fig:antisite_plot}
 \end{figure}
 
 \newpage
