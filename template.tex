@@ -26,6 +26,8 @@
 \usepackage{listings}
 \usepackage{minted}
 \usemintedstyle{vs}
+\usepackage{subfig}
+\usepackage{multirow}
 
 
 \title{Accelerated Atomistic Modelling of Aluminum Precipitates: A Case Study with Al-Cu}
@@ -219,6 +221,20 @@ interfaces in order. Relevant structures are included in the training set.}%
 \end{figure}
 
 \textcolor{red}{GSF SECTION GOES HERE}
+\begin{figure}[H]%
+\centering%
+\subfloat{{
+ \includegraphics[scale=0.4]{./figures/interface_energies.png}
+ }}%
+\subfloat{{
+ \includegraphics[scale=0.8]{figures/NOTINOQMD_00002-GSF_111.png}
+ }}%
+\\
+\subfloat{{
+ \includegraphics[scale=1.2]{figures/GSF_ThetaDP111_surf.png}
+ }}%
+\end{figure}
+
 
 Antisites were computed for every OQMD structure in the following manner.
 Firstly, the structure was allowed to be completely relaxed.
