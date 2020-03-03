@@ -77,7 +77,7 @@ Atomistic modeling via Density Functional Theory (DFT) is well-established and h
 Here, we present a demonstration of NNPs for Al-Cu based-alloys, their >$\theta$ precipitation sequence being one of the oldest and most investigated in the field, providing a model system for comparison.
 We demonstrate the high fidelity of the Al-Cu NNPs for predictions of intermetallic compound energetics, elasticity, dilute solid-solution binding, interfaces, generalized stacking fault energy surfaces, and anti-site defect energies.
 We further show that our NNP can correctly the entropically-induced shift between $\theta'$ and $\theta$, 
-\textcolor{red}{I AM TENTATIVELY ADDING A KMC SECTION SINCE ABHINAV'S RESULTS SEEM PROMISING} while with Kinetic Monte Carlo we show our NNP can model early-stage GP \textcolor{red}{AND GP2?} zone formation.
+\textcolor{red}{I AM TENTATIVELY PROPOSING A KMC SECTION SINCE ABHINAV'S RESULTS SEEM PROMISING} while with Kinetic Monte Carlo we show our NNP can model early-stage GP \textcolor{red}{AND GP2?} zone formation.
 This work points to a new and powerful approach for advancing the predictive understanding of Al alloys. 
 \end{abstract}
 
@@ -131,7 +131,7 @@ Unless stated otherwise, we computed formation energies using FCC Al and FCC Cu 
 
 \section{Results and Discussion}
 \subsection{NNP Evaluation}
-\textcolor{red}{TODO: here place the a plot of DFT vs NNP structure energies.
+\textcolor{red}{TODO: here place the a plot of DFT vs. NNP structure energies.
 In our test, the validation error was much much higher than the training error.
 You will need to explain this due to outliers and discuss their relevancy. }
 
@@ -182,7 +182,7 @@ Errors for NNP are typically in the 20-30 meV range, and values requiring greate
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.2\textwidth,center]{./figures/solsol_in_al.png}%
-\caption{Neighbor index vs binding energy $E_{bind}$ for Cu-Cu, Cu-Vac and Vac-Vac in Al matrix. 
+\caption{Neighbor index vs. binding energy $E_{bind}$ for Cu-Cu, Cu-Vac and Vac-Vac in Al matrix. 
 Relevant structures are included in the training set.}%
 \label{fig:solsol_in_al}
 \end{figure}
@@ -214,27 +214,49 @@ However, our representative NNP has high quantitative accuracy on all these inte
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.2\textwidth,center]{./figures/interface_energies.png}%
-\caption{Interface structure vs interface energy for precipitate structures. 
+\caption{Interface structure vs. interface energy for precipitate structures. 
 These are the $\theta'$ coherent, $\theta'$ semi-coherent, $\theta''$ coherent and $\theta''$ semi-coherent
 interfaces in order. Relevant structures are included in the training set.}%
 \label{fig:interface_energies}
 \end{figure}
 
-\textcolor{red}{GSF SECTION GOES HERE}
+The $\theta''$ structure is the same as that of FCC aluminum, except that every second (100) plane is replaced with Copper.
+The most mechanically-relevant GSF surface is that which coincides with the (111) plane of aluminum, which we display in Figure \ref{fig:GSF_ThetaDP_111} (b).
+To compute the GSF energy surface, we follow the procedure detailed in \cite{Yin2017a}, which we briefly summarize here.
+Firstly, the base cell was set up such that the z-direction was normal to the surface of interest while maintaining full periodicity.
+Then for each point $\vec{R}$ on the GSF surface \textcolor{red}{a3 ADD DEFINITION} vector was correspondingly shifted, then both the atoms and the a3 cell vector were allowed to relax, but only in the z-direction.
+The GSF energy at a displacement $\gamma_{GSF\vec{R}}$ was calculated using: 
+\begin{equation}
+\gamma_{GSF\vec{R}} = (E_{GSF\vec{R}} - E_{pristine})/A
+\end{equation}
+Where $E_{GSF\vec{R}}$ is the total energy of the GSF displaced at $\vec{R}$, $E_{pristine}$ is the 
+energy of the pristine structure without deformation, and $A$ is the area spanned by the GSF surface.
+In \ref{fig:GSF_ThetaDP_111} (a), we see the results for the entire GSF surface.
+The NNP potential gives a smooth GSF, with clear peaks and valleys in the energy corresponding with the underlying atomic positions.
+The ADP potential, conversely, is substantially less smooth; there is also a noticeable lack of radial symmetry and high and low energy sites,  with cobweb-like extensions across high energy points.
+Most troubling for ADP, is that regions of the $\theta''$ surface are unphysically negative in energy, this severely compromises ADP to give high-quality results for dislocation-precipitate interactions.
+Importantly, NNP gives highly accurate energies, even though we did not train the NNP for this GSF surface.
+A further example of using the NNP for GSF prediction is in \textcolor{red}{supplementary X}
+
 \begin{figure}[H]%
 \centering%
-\subfloat{{
- \includegraphics[scale=0.3]{./figures/interface_energies.png}
- }}%
-\subfloat{{
- \includegraphics[scale=0.7]{figures/NOTINOQMD_00002-GSF_111.png}
+\subfloat[]{{
+ \includegraphics[width=1.0\textwidth,center]{figures/GSF_ThetaDP111_surf.png}
  }}%
 \\
-\subfloat{{
- \includegraphics[scale=1.0]{figures/GSF_ThetaDP111_surf.png}
+\subfloat[]{{
+ \includegraphics[width=0.29\textwidth]{figures/GSF_ThetaDP111_AtomicView.png}
  }}%
+\subfloat[]{{
+ \includegraphics[width=0.71\textwidth]{figures/NOTINOQMD_00002-GSF_111.png}
+ }}%
+\caption{(a) GSF energy and (b) atomic coordinates for the $\theta''$ (111) surface. 
+In (b), each black dot represents a point of calculation for NNP and ADP, while the red numbered dots are sites that were computed with DFT.
+(c) Site index vs. GSF energy for DFT, NNP, and ADP.
+While bulk $\theta''$ was included
+in training set, the GSF calculations were not.}
+\label{fig:GSF_ThetaDP_111}
 \end{figure}
-
 
 Antisites were computed for every OQMD structure in the following manner.
 Firstly, the structure was allowed to be completely relaxed.
@@ -255,11 +277,10 @@ NNP attains excellent accuracy despite the lack of training data.
 Error bars rarely exceed 5meV and are almost always centered around the correct DFT value.
 ADP also performs reasonably but has substantially more errors, with many samples deviating more than 10meV/atom from DFT. 
 
-
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.2\textwidth,center]{./figures/antisite_plot.png}%
-\caption{DFT antisite formation energy vs ADP/NNP antisite formation energy.
+\caption{DFT antisite formation energy vs. ADP/NNP antisite formation energy.
 These structures were not included in the training set.}%
 \label{fig:antisite_plot}
 \end{figure}
@@ -275,7 +296,7 @@ These structures were not included in the training set.}%
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.2\textwidth,center]{./figures/solsol_in_cu.png}%
-\caption{Neighbor index vs binding energy $E_{bind}$ for Al-Al, Al-Vac and Vac-Vac in Cu matrix.}%
+\caption{Neighbor index vs. binding energy $E_{bind}$ for Al-Al, Al-Vac and Vac-Vac in Cu matrix.}%
 \label{fig:solsol_in_cu}
 \end{figure}
 
