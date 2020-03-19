@@ -399,6 +399,26 @@ in training set, the GSF calculations were not.}
 \label{fig:GSF_ThetaDP_111}
 \end{figure}
 
+\begin{figure}[H]%
+\centering%
+\subfloat[]{{
+ \includegraphics[width=0.32\textwidth]{figures/GSF_Theta0m11_AtomicView.png}
+ }}%
+\subfloat[]{{
+ \includegraphics[width=0.68\textwidth]{figures/}
+ }}%
+\\
+\subfloat[]{{
+ \includegraphics[width=1.00\textwidth]{figures/NOTINOQMD_00002-GSF_111.png}
+ }}%
+\caption{(a) GSF energy and (b) atomic coordinates for the $\theta''$ (111) surface. 
+In (b), each black dot represents a point of calculation for NNP and ADP, while the red numbered dots are sites that were computed with DFT.
+(c) Site index vs. GSF energy for DFT, NNP, and ADP.
+While bulk $\theta''$ was included
+in training set, the GSF calculations were not.}
+\label{fig:GSF_Theta_0m11}
+\end{figure}
+
 Antisites were computed for every OQMD structure in the following manner.
 Firstly, the structure was allowed to be completely relaxed.
 If the structure maintained the same symmetry group after full cell and atomic relaxation, we analyzed it for unique atomic sites using pymatgen.
