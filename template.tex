@@ -333,11 +333,11 @@ We calculated the slope using three different sizes of the $\theta'$ structures 
 \hline%
 Misfit Vol Cu in Al ($\AA^3$)&{-}5.770&{-}16.958&{-}4.380&\emph{-7.095 / 1.076}\\%
 Misfit Vol Al in Cu ($\AA^3$)&2.421&{-}1.259&0.109&\emph{1.334 / 0.857}\\%
-$E^{3Cu}_{111}$ (eV)&{-}0.073, \emph{-0.09}\cite{Gorbatov2019EffectiveAlloys}&{-}0.718&{-}0.112&\emph{-0.060 / 0.037}\\%
-$E^{3Cu}_{112}$ (eV)&{-}0.112, \emph{-0.13}\cite{Gorbatov2019EffectiveAlloys}&{-}0.595&{-}0.097&\emph{-0.085 / 0.025}\\%
-$E^{4Cu}_{111111}$ (eV)&\emph{0.06}\cite{Gorbatov2019EffectiveAlloys}&{-}0.612&{-}0.081&\emph{0.071 / 0.086}\\%
-$E^{4Cu}_{111112}$ (eV)&\emph{-0.17}\cite{Gorbatov2019EffectiveAlloys}&{-}1.071&{-}0.184&\emph{-0.093 / 0.066}\\%
-$E^{4Cu}_{111122}$ (eV)&\emph{-0.34}\cite{Gorbatov2019EffectiveAlloys}&{-}1.275&{-}0.226&\emph{-0.205 / 0.055}\\%
+$E^{3Cu}_{111}$ (eV)&-0.073&{-}0.718&{-}0.112&\emph{-0.060 / 0.037}\\%
+$E^{3Cu}_{112}$ (eV)&-0.112&{-}0.595&{-}0.097&\emph{-0.085 / 0.025}\\%
+$E^{4Cu}_{111111}$(eV)&0.039&{-}0.612&{-}0.081&\emph{0.071 / 0.086}\\%
+$E^{4Cu}_{111112}$(eV)&-0.126&{-}1.071&{-}0.184&\emph{-0.093 / 0.066}\\%
+$E^{4Cu}_{111122}$(eV)&-0.268&{-}1.275&{-}0.226&\emph{-0.205 / 0.055}\\%
 SolSF Cu in Al (eV)&0.052&0.108&0.042&\emph{0.062 / 0.030}\\%
 SolSF Al in Cu (eV)&{-}0.049&{-}0.034&{-}0.006&\emph{0.002 / 0.031}\\%
 \label{table:solute_special}
@@ -371,13 +371,15 @@ The GSF energy at a displacement $\gamma_{GSF\vec{R}}$ was calculated using:
 \gamma^{GSF}_{\vec{R}} = (E^{GSF}_{\vec{R}} - E^{pristine})/A
 \end{equation}
 Where $E^{GSF}_{\vec{R}}$ is the total energy of the GSF displaced at $\vec{R}$, $E_{pristine}$ is the 
-energy of the pristine structure without deformation, and $A$ is the area spanned by the GSF surface.
-In \ref{fig:GSF_ThetaDP_111} (a), we see the results for the entire GSF surface.
+the energy of the pristine structure without deformation and $A$ is the area spanned by the GSF surface.
+In Figure \ref{fig:GSF_ThetaDP_111} (a), we see the results for the entire GSF surface.
 The NNP potential gives a smooth GSF, with clear peaks and valleys in the energy corresponding with the underlying atomic positions.
 The ADP potential, conversely, is substantially less smooth; there is also a noticeable lack of radial symmetry and high and low energy sites,  with cobweb-like extensions across high energy points.
 Most troubling for ADP, is that regions of the $\theta''$ surface are unphysically negative in energy, this severely compromises ADP to give high-quality results for dislocation-precipitate interactions.
 Importantly, NNP gives highly accurate energies, even though we did not train the NNP for this GSF surface.
-A further example of using the NNP for GSF prediction is in \textcolor{red}{supplementary X}
+In Figure \ref{fig:GSF_Theta_0m11} we detail a further example of using the NNP for evaluating a GSF surface, this time for the (0$\overline{1}$1) for $\theta$ phase. 
+Firstly, we see that by this time, including structures in the training set, we attain a very high accuracy is the GSF energy. 
+Secondly, regions without training show a smooth variation, with peaks and valleys in energy that correspond to the atomic structure, conversely, ADP has multiple sharp shifts in the GSF energy surface, which appear to be artifacts.  Thus we see that NNPs can accurately scout the GSF energy surface, and we can improve them by including a few DFT structures if needed. 
 
 \begin{figure}[H]%
 \centering%
@@ -411,11 +413,10 @@ in training set, the GSF calculations were not.}
 \subfloat[]{{
  \includegraphics[width=1.00\textwidth]{figures/NOTINOQMD_00001-GSF_0m11.png}
  }}%
-\caption{(a) GSF energy and (b) atomic coordinates for the $\theta''$ (111) surface. 
+\caption{(a) GSF energy and (b) atomic coordinates for the $\theta$ (0$\overline{1}$1) surface. 
 In (b), each black dot represents a point of calculation for NNP and ADP, while the red numbered dots are sites that were computed with DFT.
 (c) Site index vs. GSF energy for DFT, NNP, and ADP.
-While bulk $\theta''$ was included
-in training set, the GSF calculations were not.}
+Indexed sites are included in the training set.}
 \label{fig:GSF_Theta_0m11}
 \end{figure}
 
