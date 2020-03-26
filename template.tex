@@ -33,7 +33,7 @@
 
 
 
-\title{Accelerated Atomistic Modelling of Aluminum Precipitates: A Case Study with Al-Cu}
+\title{A Systematically Built Neural Network Potential for Al-Cu}
 
 \author{
  Daniel Marchand \\
@@ -81,8 +81,7 @@ Here, we present a demonstration of NNPs for Al-Cu based-alloys,
 their $\theta''$ $\rightarrow$ $\theta'$ $\rightarrow$ $\theta$ precipitation sequence
 being one of the oldest and most investigated in the field, providing a model system for comparison.
 We demonstrate the high fidelity of the Al-Cu NNPs for predictions of intermetallic compound energetics, elasticity, dilute solid-solution binding, interfaces, generalized stacking fault energy surfaces, and anti-site defect energies.
-We further show that our NNP can correctly the entropically-induced shift between $\theta'$ and $\theta$, 
-\textcolor{red}{I AM TENTATIVELY PROPOSING A KMC SECTION SINCE ABHINAV'S RESULTS SEEM PROMISING} while with Kinetic Monte Carlo we show our NNP can model early-stage GP \textcolor{red}{AND GP2?} zone formation.
+We further show that our NNP can correctly capture the subtle, entropically-induced shift between $\theta'$ and $\theta$.
 This work points to a new and powerful approach for advancing the predictive understanding of Al alloys. 
 \end{abstract}
 
@@ -90,47 +89,91 @@ This work points to a new and powerful approach for advancing the predictive und
 % keywords can be removed
 %\keywords{First keyword \and Second keyword \and More}
 
-
 \section{Introduction}
-Aluminum is one of the critical materials in the modern world.
-Pure Aluminum is almost useless because of its low yield point\cite{Nie2014PhysicalAlloys}; defects are what give Aluminum its utility, its strength.
-Precipitates are, arguably, the most essential, and most complex defects for understanding Aluminum's mechanical properties.
-Heat is almost always needed to obtain the optimal type and size of precipitates, so much heat, that aluminum production is one of the largest energy-consumers of the planet\cite{Raabe2019StrategiesMetals}.
-It is not trivial to predict the amount of heat needed, or even the concentration of elements to add, as the mechanical properties are the unique function of dozens of alloying elements and innumerable processing conditions.
+The mechanical properties of metals that make them widely useful for many structural applications are related to the underlying fundamental behavior of defects in the crystalline lattice.  The atomic structures of dislocations, grain boundaries, interfaces, precipitates, crack tips, and vacancies and their motion, evolution, and/or interactions all determine the plastic flow, fracture toughness, creep, fatigue, radiation resistance, and other essential macroscopic performance measures.  Most engineering metals are alloys, i.e., multicomponent and multiphase materials, adding another level of chemical complexity beyond that of the defects themselves.  Understanding, and ultimately controlling, the behavior of these defects is crucial for optimizing application conditions and designing new higher-performance alloys.  This, in turn, requires atomic-scale simulations but at scales relevant to the defects that are often far above the scales accessible by first-principles methods such as density-functional theory (DFT).  The solution is thus the development of semi-empirical interatomic potentials that accurately capture the structures, energies, and motion of the various defects.
 
-Good atomic models are essential in the study of aluminum precipitates, firstly, because the initial formation of precipitates involves small clusters of atoms, too small to be viewed with ease in experiments.
-Secondly, because the interactions between dislocations and small precipitates are discrete, and does not readily lend itself to continuum modeling.
-The challenge is to find atomic models that are both accurate and fast.
-Density Functional Theory (DFT) is very accurate, but incredibly slow modeling more than a few hundred atoms in DFT is exceptionally challenging\cite{Martin2004}.
-Atomic potentials are fast, but often inaccurate, it is challenging to have atomic potentials model all of the properties relevant to precipitate formation, growth, and influence on mechanical properties.
+The development of interatomic potentials has a long history.
+Some are special-purpose, aimed at capturing one or a few specific properties of relevance for a narrow range of behavior.
+Other potentials are intended to be for broader use across different defects in a given metal.
+Potentials for elemental FCC metals, mainly within the embedded-atom or modified embedded-atom (EAM and MEAM, respectively) frameworks, are widespread, and generally perform well against experimental or first-principles benchmarks to which they are fit while providing adequate representations of many defects.
+However, even potentials for FCC metals can be very inaccurate for certain properties, e.g., unstable stacking fault energies, or can predict unphysical behavior for a given defect, e.g., a sharp crack tip.
+Potentials for FCC alloys generally have even more limited capabilities, due to the underlying assumptions of the embedded atom framework, such that the potentials are only reasonably quantitative for a few properties.
+Potentials for BCC elements and alloys are far less successful, with almost no potentials able to produce the proper correct compact and unpolarized screw dislocation core and Peierls potential for screw motion, which controls plasticity in elemental BCC metals.
+Potentials for elemental HCP metals are also less successful because the range of operative slip systems (basal, prismatic, pyramidal I, and II) is broad and high-temperature transitions to BCC are not often captured.
+Potentials for BCC and HCP alloys inherit the problems of the elements.
+While some properties can be captured in agreement with experiments, the potentials are not accurate enough for complex defects and defect interactions.
+The shortcomings of existing potentials stem in part from the relatively rigid functional forms of the EAM and MEAM frameworks, especially limiting for multi-element interactions except in a few rare cases (cf.~\cite{Juslin2005AnalyticalSystem}).
+Hence, a different approach is needed so that the power of atomistic computations can be used to understand, predict, and design the performance of technologically valuable metal alloys.
 
-Defects control the mechanical quality of aluminum alloys;
-solutes and precipitates are the primary barriers to dislocation propagation.
-Single solutes may attract or repel each other depending on their solute binding energies and form clusters with time.
-Clusters, given enough time and enough heat, transform into precipitate structures within the matrix.
-Precipitate stability depends on many factors\cite{Giofre2017}: bulk enthalpy, elastic strain, interface energy, and in some cases, such as $\theta'$ and $\theta$, precipitates can be very sensitive to entropic vibrations as well.
-Then the resistance these precipitates give to incoming dislocations is highly dependant on their generalized stacking fault energy surface.
-Finally, real alloys are complex, and often precipitates take on a non-stoichiometric form the propensity for this to happen is controlled by antisite and vacancy energies\cite{Kim2018}.
-Therefore, a good potential should capture all these properties:
-solute binding energies, formation enthalpies, atomic volumes, misfit volumes, elastic constants, interfacial energies, generalized stacking fault surfaces, and antisite and vacancy energies. 
+Such a new approach is the application of machine learning methods to fit the potential energy surface (PES)
+of a metal without imposing a highly-restricted functional form ~\cite{Bartok2013,Behler2015,Kobayashi2017,PurjaPun0PhysicallyMaterials,Wang2018}.
+The construction of a machine-learned potential consists of (i) choosing a suitable class of geometric representations to describe local atomic environments (the descriptors) ~\cite{Behler2007,Rogers2010Extended-connectivityFingerprints,Bartok2015,Faber2017PredictionError}, (ii) developing a database of energies and forces of atomic structures using first-principles methods (the training dataset), and (iii) applying a regression algorithm (e.g., neural network, kernel ridge regression) to optimize the parameters in the machine learning framework to best-match the training data.
+Since the number of descriptors and parameters is unlimited, the machine-learning approaches provide a ``parameter-rich" space within which many configurations in the PES are well-described relative to the reference first-principles values.
+Machine learning can be equally well used on elements and alloys, although increasing chemical complexity rapidly increases the phase space and thus the required training data.
+However, as a pure exercise in regression, machine learning potentials are not suitable for extrapolation to structures that differ notably from those in the training set.
+They are also not unique, and the choices of representation, machine learning method, and extent of the training data, affect the final potential.  
 
-In this work, we focus on Al-Cu as a case study for atomic modeling.
-It has been well-studied for a long time\cite{Preston1938StructureAlloys}, thus making it nicely comparable for benchmarks.
-Furthermore, it exhibits several properties that are challenging to model, notably the entropically-driven $\theta'$→ $\theta$ transformation \cite{Wolverton2001b}.
+It should be recognized, however, that the above caveats regarding machine learning are present to some extent with traditional interatomic potentials.
+That is, for an EAM or MEAM potential, the fixed functional form with limited parameters intrinsically limits the ability to fit many properties accurately.
+The results also depend on the target properties and training data chosen.
+And the regression algorithms are varied.
+Lastly, the traditional potentials then require user-imposed decisions about which properties are most significant when all desired properties cannot be achieved because of the limited flexibility.
+The perceived advantages of the traditional potentials are that (i) the concept of embedding is well-founded in the underlying quantum mechanics of the problem, and (ii) specific desired behavior (e.g., very strong short-range atomic repulsions) can be easily enforced at the outset.
+However, a detailed examination of how traditional potentials are generated reveals that there are many hidden parameters, e.g., the complex spline fits of the ``electron density" of an atom and the arbitrary form of the added pair potential, that are used to obtain quality fitting to the training data.
+Thus, the choice of traditional versus machine learning potentials can be reduced to a choice between either:
 
-Apostol and Mishin created an Angular Dependent Potential (ADP) for Al-Cu systems.
-In their work, they focused on modeling: formation energies, lattice constants, elastic constants, surface energies, and generalized stacking fault energies\cite{Apostol2011}.
+(i) EAM MEAM, where the potential is built on a fundamental concept that is also relatively smooth and less likely to have extrapolation errors but is highly fitted and still unable accurately to capture many necessary materials properties 
+
+or
+
+(ii) ML, where the potential is purely a regression on the training set and, being parameter-rich, can fit nearly all desired properties but may exhibit unphysical behaviors in regions of extrapolation.
+
+For machine learning, a careful balance must be struck in selecting an appropriately limited, set of descriptors, a limited set of fitting parameters, and a sufficiently large and diverse training set to achieve broad, accurate performance without overfitting that exacerbates extrapolation errors. 
+
+The curation of the training dataset is essential.
+Ideally, an exhaustive dataset of possible atomic environments with their energies and forces from electronic structure calculations is available to ensure transferability.
+Generating the dataset starts with defining the physical properties that the potential should be able to reproduce. 
+The configurational space associated with unit cells for calculating a property is then sampled.
+And from these trajectories, correlated sets of configurations are stored.
+Typically such a database contains $\mathcal{O}\left(10^5\right)$ atomic.
+Then representative environments are chosen into the actual training dataset; this was done e.g., for Fe~\cite{Dragoni2018AchievingIron} and W~\cite{Szlachta2014AccuracyTungsten} in the GAP framework.
+
+To circumvent the tedious task of curating an exhaustive training data set while maintaining transferability, several semi-automated protocols have been developed to sample the phase space of a material.
+\textit{Active learning} methods have used random perturbations of bulk crystalline structures to sample the phase space of Al, Mg and an Al-Mg alloy space~\cite{Zhang2019ActiveSimulation}.
+A second approach, \textit{self-guided learning}, has explored the phase space by using randomized unit cells paired with a selection of the most diverse structures and applied to C, Si and Ti.
+An \textit{on-the-fly learning} method has combined dft calculations with a machine learning for the calculation of melting points for Al, Si, Ge, Sn and MgO~\cite{Jinnouchi2019On-the-flyPointsb}.
+This approach circumvents expensive dft calculations of $99\,$\% of structures because they are accurately described by the potential developed during the previous history; only structures with an estimated error larger than a defined bound are recalculated via dft and then added to improve the machine-learned force field.
+
+A different approach is a hybrid approach combining an analytical bond order potential (BOP)
+form with a neural network that adjusts the BOP parametrization depending on the specific environment~\cite{PurjaPun0PhysicallyMaterials}.
+The result is a much-improved potential that retains the physical bounds in atomic environments where extrapolation is performed.
+In this approach, the training data plays a slightly lesser role because some physics is already encoded in the functional form, which is only subject to a different parametrization.
+
+A key, and limiting, aspect of nearly all of the ML potentials generated to date is that the training data, and fitness of the potential, are mainly demonstrated on fundamental properties of the bulk crystalline material with very few, if any, defects.
+Structures in the training set and the predicted properties are associated with the equilibrium geometry, elastic response of the bulk, vibrational properties, vacancies, surfaces, and, in some cases, liquid-state information.
+These features are necessary but far from sufficient for performing metallurgically-useful studies of the behavior of defects in metals.
+A few efforts have extended beyond these basic properties.
+Kobayashi et al.~\cite{Kobayashi2017} developed an NNP for the ternary Al-Mg-Si system including a wide range of intermetallics, solute-solute interactions, and interfaces, and showed good predictions for edge and screw dislocation structures, solute/dislocation interactions, and in-situ precipitates; further development was shown by Imbalzano et al.~\cite{Imbalzano2018}.
+The GAP potentials for Fe~\cite{Dragoni2018AchievingIron} and W~\cite{Szlachta2014AccuracyTungsten} included baseline data needed for describing dislocations, and the GAP Fe potential was used to study the double-kink nucleation process that controls plastic flow in BCC metals~\cite{Maresca2018}.
+The hybrid approach ~\cite{PurjaPun0PhysicallyMaterials} showed application to an FCC edge dislocation.
+Many of these properties are difficult to compute with ab-initio methods and are still only the next step toward realistic metallurgical studies (e.g., dislocations interacting with precipitates, or fracture in an alloy).
+
+%%%% MY INTRODUCTION %%%%%
+
+In this work, we focus on Al-Cu as a case study for atomic modeling with NNPs. These alloys have been well-studied for a long time\cite{Preston1938StructureAlloys} is crucial to the automotive and aerospace industries\cite{Nie2014PhysicalAlloys}, and its production is one of the great energy consumers of the planet\cite{Raabe2019StrategiesMetals}. A good Al-Cu potential needs to capture many properties: solute clusters, bulk and interface stability of precipitates, generalized stacking faults (GSF), as well as vacancy and antisite formation energies. Furthermore, Al-Cu has a subtle, entropically-driven,  $\theta'$→ $\theta$ transformation \cite{Wolverton2001b} that should be duplicated by any suitable potential.
+
+Apostol and Mishin created an Angular Dependent Potential (ADP) for Al-Cu systems\cite{Apostol2011} ADP being an extension of MEAM but with additional angular terms included.
+In their work, they focused on modeling: formation energies, lattice constants, elastic constants, surface energies, and generalized stacking fault energies.
 The potential became very popular and was used in numerous studies of mechanical behavior of precipitates,
-in studying solute and precipitate strengthening\cite{Singh2013AnAlloy}\cite{Esteban-Manzanares2019}\cite{Wu2020AtomisticAlloys}.
-Work by Kobayashi et al. \cite{Kobayashi2017} studied Al-Mg-Si with Neural Network Potentials (NNPs), and they had found excellent results in modeling precipitate-relevant properties beyond what was possible with other potentials for that system.
+in studying solute and precipitate strengthening\cite{Singh2013AnAlloy}\cite{Esteban-Manzanares2019}\cite{Wu2020AtomisticAlloys}. Thus this potential serves as an excellent benchmark to our own work. 
 
-Our goal in this work was to attempt to construct an NNP that would improve state of the art in precipitate modeling, where we use ADP a comparison.
+Our goal in this work was to attempt to construct an NNP that would improve the state of the art in precipitate modeling, where we use ADP a comparison.
 We carefully, systematically examined all the atomic-level properties that would be relevant to precipitate modeling: solute/vacancy interactions, formation energies, elastic constants, interface energies, generalized stacking fault energies and the as-mentioned entropic stability of $\theta'$ over $\theta$ phase.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Methodology}
 \subsection{Atomic Structures}
-\textcolor{red}{This paragraph risks overlapping with the introduction.
-The section seems a bit strange now, like I"m just writing out a list}
 We wished to study and include as many atomic structures relevant to precipitation as possible.
  Here we briefly outline the structures we considered in this study, with \textcolor{red}{further details in the relevant sections and the supplementary}.  
 Firstly we needed a broad range of bulk Al-Cu compounds and made use of all those in the Open Quantum Materials Database \cite{Kirklin2015}.
@@ -164,8 +207,7 @@ also looked at, but only for validation and not for training}
 \end{table}
 
 
-\textcolor{red}{This paragraph probably needs to be moved elsewhere? 
-Should I move other structure descriptions here?} The OQMD was the primary source of structures used when training and
+The OQMD was the primary source of structures used when training and
 testing the NNP across a broad range of Al-Cu compounds. $\theta$ and $\theta''$ were not in the OQMD, and we
 included them as well manually for a total of 62 structures. Each of these structures was then fully relaxed, 
 both in cell dimensions and atomic positions. Because we wished to avoid testing duplicates, only structures that retained the same symmetry group before and after relaxation were explicitly compared against the ADP and NNP
@@ -186,7 +228,7 @@ E^{structure} = \sum_i E^{atom}_i
 Each atomically-local energy, $E^{atom}_i$, is a nested hierarchical function of weighted layers across the neural network.
 Where In our case, with two hidden layers, and 24 nodes per layer the functional form would be:
 \begin{equation}
-E^{atom}_i = f_3 \Large( b^3_1+\sum^{24}_{k=1}a^{2,3}_{k,1}\cdot f^2_k\Large(b^2_k+\sum^{24}_{j=1}a^{1,2}_{j,k}\cdot f^1_j \Large( b^1_j + \sum^{64}_{i=1} a^{0,1}_{i,j}\cdot G_i                 \Large)\Large)\Large) 
+E^{atom}_i = f_3 ( b^3_1+\sum^{24}_{k=1}a^{2,3}_{k,1}\cdot f^2_k(b^2_k+\sum^{24}_{j=1}a^{1,2}_{j,k}\cdot f^1_j ( b^1_j + \sum^{64}_{i=1} a^{0,1}_{i,j}\cdot G_i  ))) 
 \end{equation}
 Where $a^{q,p}_{z,w}$ is the weighting from node $z$ on layer $q$ to node $z$ on layer $w$, similarly $b^q_z$ is
 the bias of node $z$ on layer $q$. $f_q$ is an activation function, in our work we used used the softplus function,
@@ -196,7 +238,7 @@ We used both radial and angular symmetry functions as  defined as follows:
 G^{radial}_i = \sum^{N_{atom}}_{j=1}e^{-\eta(R_{ij}-R_{s})^2}\cdot f_c(R_{ij})
 \end{equation}
 \begin{equation}
-G^{angular}_i = 2^{1-\zeta}\sum_{j\neq i}\sum_{k\neq i,j}\large[ (1+\lambda\cdot cos\theta_{ijk})^\zeta \cdot e^{-\eta(R^2_{ij}+R^2_{ik}+R^2_{jk})}\cdot f_c(R_{ij}) \cdot f_c(R_{jk}) \cdot f_c(R_{jk}) \large]
+G^{angular}_i = 2^{1-\zeta}\sum_{j\neq i}\sum_{k\neq i,j}[ (1+\lambda\cdot cos\theta_{ijk})^\zeta \cdot e^{-\eta(R^2_{ij}+R^2_{ik}+R^2_{jk})}\cdot f_c(R_{ij}) \cdot f_c(R_{jk}) \cdot f_c(R_{jk}) ]
 \end{equation}
 
 Where $\eta$, $\zeta$ and $\lambda$ are the defining hyperparameters of a given symmetry function, $R_ij$ is 
@@ -219,13 +261,26 @@ Ry of Methfessel-Paxton smearing\cite{Methfessel1989High-precisionMetals}.
 All pseudopotentials were chosen using the efficiency collection of the solid-state pseudopotential library\cite{Prandini2018}, with the exception of Cu, where the potential of Dal Corso\cite{DalCorso2014}
 was found to have better accuracy and reduced computational cost.
 We used AiiDA\cite{Pizzi2016} to manage the large number of DFT computations needed for this study, as well as to ensure the calculations used very consistent settings, as is essential for ML potentials\cite{Dragoni2018AchievingIron}.
-\textcolor{red}{TODO: elaborate more on AiiDA-usage}
+
+Here we briefly outline how we used AiiDA to manage our DFT calculations, as can be seen in Figure \ref{fig:aiida_methods},
+and we provide all codes and all computed data in the supplementary.
+Firstly, we generated a set of scripts to create structures, at least one script for each of the categories mentioned in Table \ref{table:included_structures}.
+These structures were stored in separate AiiDA structure groups.
+In some cases, e.g., for importing the OQMD structures or generating phonon-displaced structures, we used an external script to create structures, which we then uploaded into AiiDA.
+We then used a wrapper script that allowed us to apply a consistent set of parameters, kpoint spacing, and pseudopotentials to generate an AiiDA workchain for each structure.
+Each workchain managed a QuantumEspresso calculation on the HPC cluster, 
+where events such as job time outs and result parsing were handled automatically.
+The script could launch in several modes to created SCF, atomic-relaxation, atomic and cell relaxation, or elasticity calculations, as needed in each case.
+AiiDA stored the results of each calculation, which we later parsed using a dedicated Jupyter notebook in each case. 
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1.0\textwidth,center]{figures/recalculateDBschematic.png}%
+\caption{Schematic of AiiDA usage}%
+\label{fig:aiida_methods}
+\end{figure}
 
 \section{Results and Discussion}
 \subsection{NNP Evaluation}
-\textcolor{red}{TODO: here place the a plot of DFT vs. NNP structure energies.
-In our test, the validation error was much much higher than the training error.
-You will need to explain this due to outliers and discuss their relevancy. }
 
 Figure \ref{fig:matparam_purestats} shows the performance of NNP and ADP against DFT on fundamental properties: lattice and elastic constants, surface and stacking fault energies, for pure Al and Cu.
 For most of these properties, NNP shows little or no advantage relative to ADP, the sole exception being stable stacking fault energies in aluminum.
@@ -237,7 +292,7 @@ In any case, we find that our potential is highly performant when one is conside
 
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=1.2\textwidth,center]{./figures/matparam_purestats.png}%
+\includegraphics[width=1\textwidth,center]{./figures/matparam_purestats.png}%
 \caption{Deviation of NNP and ADP from DFT (\%) for fundamental properties for Al and Cu. 
 Relevant structures are included in the training set. }%
 \label{fig:matparam_purestats}
@@ -256,7 +311,7 @@ E^{ref}_{Cu} = E^{1sol}_{255Al,1Cu} - 255E^{FCC}_{Al}
 Formation energy is particularly well-handled by the NNP, with most errors well within a few meV/atom, while ADP often highly overestimates or underestimates the formation energy;
 in a few cases, ADP reverses the sign, i.e., predicting stable compounds as unstable and vice versa.
 However, for structures with high formation energy, both the NNP and ADP tend to struggle, often they do not end up relaxing to the same structure as DFT, or they have substantial errors.
-ADP regularly underestimates the atomic volume, even for critical structures: $\theta$ and $\theta'$ errors can be substantial, see \textcolor{red}{supplementary table}.
+ADP regularly underestimates the atomic volume, even for critical structures: $\theta$ and $\theta'$ errors can be substantial.
 For elastic constants, we see that neither ADP nor NNP performs ideally.
 ADP does a reasonable job of capturing the precipitate structures and outperforms NNP on pure aluminum.
 However, we see that ADP often makes quite substantial errors in the elastic constants for intermediate compounds, while this is less the case for NNP. Interestingly it seems that the B2 structure poses a challenge to both ADP and most NNP.
@@ -265,7 +320,7 @@ ADP predicts B2 to be extremely stable, while it has the highest error for any s
 
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=1.2\textwidth,center]{figures/matparam_stats1.png}%
+\includegraphics[width=1\textwidth,center]{figures/matparam_stats1.png}%
 \caption{Comparison of: formation energy (meV), atomic volume (Ang$^3$), elastic constants C$_{11}$, C$_{21}$ and C$_{44}$ (GPa) across NNP, ADP and DFT for all structures in the OQMD. 
 Relevant structures are included in the training set. }
 \label{fig:matparam_stats1}
@@ -286,17 +341,71 @@ Errors for NNP are typically in the 20-30 meV range, and values requiring greate
 
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=1.2\textwidth,center]{./figures/solsol_in_al.png}%
+\includegraphics[width=1\textwidth,center]{./figures/solsol_in_al.png}%
 \caption{Neighbor index vs. binding energy $E_{bind}$ for Cu-Cu, Cu-Vac and Vac-Vac in Al matrix. 
 Relevant structures are included in the training set.}%
 \label{fig:solsol_in_al}
 \end{figure}
 
-\textcolor{red}{Not yet sure whether geometry has a separate section or not}.
+
+In Table \ref{table:solute_special}, we report further properties of dilute solutes: 3 and 4 atom clusters, misfit volume and solute-stacking fault interactions.
+Firstly we extend the binary results to simple clusters of 3 and 4 atoms, and compute the cluster formation energy, $\Delta E^{cluster}_{f,(N-X,X)}$,
+in the same manner as in Equation \ref{eqn:formE_structure}, which we make explicit below:
+
+\begin{equation}
+\Delta E^{cluster}_{f,(N-X,X)} = E^{cluster}_{N-X,X} - \sum_i E^{ref}_i
+\end{equation}
+
+Where the superscript defines the cluster by describing the relative neighboring indexes, same as in \cite{Gorbatov2019EffectiveAlloys}.
+These results cover the same clusters that were examined by Gorbatov et al.\cite{Gorbatov2019EffectiveAlloys}, with which they were able to produce GP-I and GP-II zone formation in a cluster-expansion model.
+We note that the 111 and 111111, namely a compact triangle and tetrahedral of nearest neighbors respectively, are not compatible with the (100) plane formation that characterizes GP-I and GP-II zones, while the 111112 and 111122 clusters are.
+Naturally, we then find that the (100) plane-favoring clusters are energetically preferable, while the (100) plane incompatible clusters are not.
+We see that ADP gets the absolute values wrong, predicting all clusters as being overly stable; it also gets the relative trends of the 3-atom clusters wrong.
+Our selected NNP also flips the 111 and 112 cluster atom stability, but otherwise is in good agreement with relative trends and absolute values of cluster formation energies.
+Importantly, we see that the average NNP performs much better than our selected NNP, and we can choose several NNPs that can have excellent performance for this property. 
+We evaluated misfit volume by manually relaxing matrix with the solute present for ADP and the NNPs, and by computing directly from the pressure and bulk modulus of a solute-containing cell for DFT.
+We see that ADP contains gross errors, with a massive massively negative error for Cu in Al, and reversing the sign of Cu in Al (predicting a positive misfit volume, rather a negative one).
+Most NNPs, including our selected NNP, attain reasonable accuracy for this value, within ~2$\AA^3$ of the DFT value. 
+Solute-dislocation interaction energies are vital when considering solute strengthening\cite{Leyson2010}.
+We computed solute-stacking fault energy, $E^{Sol-SF}_{f,(N-1,X)}$, as a proxy parameter in the manner described in\cite{Yin2017a}.
+Namely, we computed:
+
+\begin{equation}
+\Delta E^{Sol-SF}_{f,(N-1,X)} = E^{Sol-SF}_{N-1,X} - E^{SF}_{N} - (E^{Pristine}_{N-1,X}-E^{Pristine}_{N})
+\end{equation}
+
+Where $E^{Sol-SF}_{N-1,1}$ is the energy of a stacking fault with a single solute,
+$E^{SF}_{N}$ is the energy of a stacking fault,
+$E^{Pristine}_{N-1,X}$ is the energy of single solute in pristine matrix (of the same size as the SF cell), 
+and $E^{Pristine}_{N}$ the energy of pristine matrix. 
+The results show that both potentials have good results (within ~50meV of DFT value).
+The NNP showing better accuracy for Cu in the Al matrix and ADP shows better results for Cu in the Al matrix.
+
+
+\begin{table}[h!]
+\begin{tabular}{l|cccc}%
+\hline%
+&DFT&ADP&NNP& NNP-\emph{Avg / StdDev}\\%
+\hline%
+$E^{3Cu}_{111}$ (eV)&-0.073&{-}0.718&{-}0.112&\emph{-0.060 / 0.037}\\%
+$E^{3Cu}_{112}$ (eV)&-0.112&{-}0.595&{-}0.097&\emph{-0.085 / 0.025}\\%
+$E^{4Cu}_{111111}$(eV)&0.039&{-}0.612&{-}0.081&\emph{0.071 / 0.086}\\%
+$E^{4Cu}_{111112}$(eV)&-0.126&{-}1.071&{-}0.184&\emph{-0.093 / 0.066}\\%
+$E^{4Cu}_{111122}$(eV)&-0.268&{-}1.275&{-}0.226&\emph{-0.205 / 0.055}\\%
+Misfit Vol Cu in Al ($\AA^3$)&{-}5.770&{-}16.958&{-}4.380&\emph{-7.095 / 1.076}\\%
+Misfit Vol Al in Cu ($\AA^3$)&2.421&{-}1.259&0.109&\emph{1.334 / 0.857}\\%
+SolSF Cu in Al (eV)&0.052&0.108&0.042&\emph{0.062 / 0.030}\\%
+SolSF Al in Cu (eV)&{-}0.049&{-}0.034&{-}0.006&\emph{0.002 / 0.031}\\%
+\end{tabular}%
+\caption{Misfit Volumes, Cu cluster energies and solute-stacking fault interactions for DFT, ADP and NNP. 
+The 3 and 4 body clusters and not explicitly included in the training set, while the Misfit Volume and 
+Solute-Stacking fault structures are.}
+\label{table:solute_special}
+\end{table}
+
 In this work, the coherent and semi-coherent versions of the $\theta''$ and $\theta'$ interfaces were studied while $\theta$ was omitted since it only forms incoherent interfaces \cite{Nie2014PhysicalAlloys}.
 We constructed these interfaces by taking their OQMD entries and stacking them on the Al matrix using the ASE \mintinline{python}{ase.build.stack} command.
 During relaxation, atoms are free to move, but the cell is held fixed. 
-Reference images for these interfaces are included in \textcolor{red}{Figure XX} in the supplementary.
 
 We computed the interface energy in the same manner as in \cite{Vaithyanathan2004MultiscaleAlloys}, and we only briefly summarize the method here.
 The formation energy for an interface with N atoms of which X are of the matrix and Y are of the precipitate,
@@ -312,38 +421,6 @@ $\Delta E^{interface}_f$, divided by $2A$.
 We calculated the slope using three different sizes of the $\theta'$ structures and four different sizes of $\theta''$ structures, starting with a minimum of one precipitate layer and two Al layers and incrementing onward in size. 
 
 
-%\setlength{\tabcolsep}{20pt}
-%\setlength{\tab}{20pt}
-\textcolor{red}{TODO: Misfit vol definition}
-\textcolor{red}{TODO: Cluster Energy definition}
-\textcolor{red}{TODO: Sol-SF Energy defintion}
-\begin{equation}
-\Delta E^{cluster}_{f,(N-X,X)} = E^{cluster}_{N-X,X} - \sum_i E^{ref}_i
-\end{equation}
-\begin{equation}
-\Delta E^{Sol-SF}_{f,(N-1,X)} = E^{Sol-SF}_{N-1,1} - E^{SF}_{N} - (E^{Pristine}_{N-1,1}-E^{Pristine}_{N})
-\end{equation}
-
-
-
-\begin{table}[h!]
-\begin{tabular}{l|cccc}%
-\hline%
-&DFT&ADP&NNP& NNP-\emph{Avg / StdDev}\\%
-\hline%
-Misfit Vol Cu in Al ($\AA^3$)&{-}5.770&{-}16.958&{-}4.380&\emph{-7.095 / 1.076}\\%
-Misfit Vol Al in Cu ($\AA^3$)&2.421&{-}1.259&0.109&\emph{1.334 / 0.857}\\%
-$E^{3Cu}_{111}$ (eV)&-0.073&{-}0.718&{-}0.112&\emph{-0.060 / 0.037}\\%
-$E^{3Cu}_{112}$ (eV)&-0.112&{-}0.595&{-}0.097&\emph{-0.085 / 0.025}\\%
-$E^{4Cu}_{111111}$(eV)&0.039&{-}0.612&{-}0.081&\emph{0.071 / 0.086}\\%
-$E^{4Cu}_{111112}$(eV)&-0.126&{-}1.071&{-}0.184&\emph{-0.093 / 0.066}\\%
-$E^{4Cu}_{111122}$(eV)&-0.268&{-}1.275&{-}0.226&\emph{-0.205 / 0.055}\\%
-SolSF Cu in Al (eV)&0.052&0.108&0.042&\emph{0.062 / 0.030}\\%
-SolSF Al in Cu (eV)&{-}0.049&{-}0.034&{-}0.006&\emph{0.002 / 0.031}\\%
-\label{table:solute_special}
-\end{tabular}%
-\caption{Misfit Volumes, Cu cluster energies and solute-stacking fault interactions for DFT, ADP and NNP}
-\end{table}
 
 
 Figure \ref{fig:interface_energies} plots the results of the interface energy calculations.
@@ -354,7 +431,7 @@ However, our representative NNP has high quantitative accuracy on all these inte
 
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=1.2\textwidth,center]{./figures/interface_energies.png}%
+\includegraphics[width=1\textwidth,center]{./figures/interface_energies.png}%
 \caption{Interface structure vs. interface energy for precipitate structures. 
 These are the $\theta'$ coherent, $\theta'$ semi-coherent, $\theta''$ coherent and $\theta''$ semi-coherent
 interfaces in order. Relevant structures are included in the t/raining set.}%
@@ -365,7 +442,8 @@ The $\theta''$ structure is the same as that of FCC aluminum, except that every 
 The most mechanically-relevant GSF surface is that which coincides with the (111) plane of aluminum, which we display in Figure \ref{fig:GSF_ThetaDP_111} (b).
 To compute the GSF energy surface, we follow the procedure detailed in \cite{Yin2017a}, which we briefly summarize here.
 Firstly, the base cell was set up such that the z-direction was normal to the surface of interest while maintaining full periodicity.
-Then for each point $\vec{R}$ on the GSF surface \textcolor{red}{a3 ADD DEFINITION} vector was correspondingly shifted, then both the atoms and the a3 cell vector were allowed to relax, but only in the z-direction.
+Then for each point $\vec{R}$ on the GSF surface the a3  cell vector was correspondingly shifted,
+then both the atoms and the a3 cell vector were allowed to relax, but only in the z-direction.
 The GSF energy at a displacement $\gamma_{GSF\vec{R}}$ was calculated using: 
 \begin{equation}
 \gamma^{GSF}_{\vec{R}} = (E^{GSF}_{\vec{R}} - E^{pristine})/A
@@ -428,20 +506,20 @@ For each of the unique sites identified, we then swapped it with the different a
 The energies of all antisite structures were calculated without relaxation.
 This equation gave the antisite formation energies $\Delta E^{antisite}_f$:
 \begin{equation}
-\Delta E^{antisite}_f = E_{antisite} - E_{pristine} - \sum\Delta n_i E^{ref}_i
+\Delta E^{antisite}_f = E^{antisite} - E^{pristine} - \sum\Delta n_i E^{ref}_i
 \end{equation}
 Where $E^{antisite}$, $E^{pristine}$ are the total energies of the antisite, and pristine structure, $n_i$ is the 
 number and sign of the swapped atoms, and $E^{ref}_i$ is the reference energy for compound $i$, as stated in 
 equations \ref{eqn:formRef_Al} and \ref{eqn:formRef_Cu}.
 
 Figure \ref{fig:antisite_plot} shows the antisite results.
-\textcolor{red}{NNP attains excellent accuracy despite the lack of training data.
-Error bars rarely exceed 5meV and are almost always centered around the correct DFT value.
-ADP also performs reasonably but has substantially more errors, with many samples deviating more than 10meV/atom from DFT. }
+Error bars rarely exceed 0.1eV and are almost always centered around the correct DFT value.
+ADP also performs reasonably but has substantially more errors, with many samples deviating more than 1eV from DFT.
+These results demonstrate that NNPs make accurate predictions of defects that are not in their training set. 
 
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=1.2\textwidth,center]{figures/antisite_vacancies.png}%
+\includegraphics[width=1\textwidth,center]{figures/antisite_vacancies.png}%
 \caption{DFT antisite formation energy vs. ADP/NNP antisite formation energy.
 These structures were not included in the training set.}%
 \label{fig:antisite_plot}
@@ -457,23 +535,11 @@ These structures were not included in the training set.}%
 \section{Supplementary}
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=1.2\textwidth,center]{./figures/solsol_in_cu.png}%
+\includegraphics[width=1\textwidth,center]{./figures/solsol_in_cu.png}%
 \caption{Neighbor index vs. binding energy $E_{bind}$ for Al-Al, Al-Vac and Vac-Vac in Cu matrix.}%
 \label{fig:solsol_in_cu}
 \end{figure}
 
-
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=540px]{./figures/NOTINOQMD_00002-GSF_111.png}%
-\caption{GSF energy for key sites on the 111 surface of  $\theta''$.These sites are not included in the  training set for NNP}%
-\end{figure}
-
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=540px]{./figures/NOTINOQMD_00001-GSF_0m11.png}%
-\caption{GSF energy for key sites on the 0-11 surface of  $\theta$. These sites are included in the training set for NNP}%
-\end{figure}
 
 
 \begin{tabular}{l|lll|lll}%
