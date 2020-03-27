@@ -80,7 +80,7 @@ Atomistic modeling via Density Functional Theory (DFT) is well-established and h
 Here, we present a demonstration of NNPs for Al-Cu based-alloys, 
 their $\theta''$ $\rightarrow$ $\theta'$ $\rightarrow$ $\theta$ precipitation sequence
 being one of the oldest and most investigated in the field, providing a model system for comparison.
-We demonstrate the high fidelity of the Al-Cu NNPs for predictions of intermetallic compound energetics, elasticity, dilute solid-solution binding, interfaces, generalized stacking fault energy surfaces, and anti-site defect energies.
+We demonstrate the high fidelity of the Al-Cu NNPs for predictions of intermetallic compound energetics, elasticity, dilute solid-solution binding, interfaces, generalized stacking fault energy surfaces, and antisite defect energies.
 We further show that our NNP can correctly capture the subtle, entropically-induced shift between $\theta'$ and $\theta$.
 This work points to a new and powerful approach for advancing the predictive understanding of Al alloys. 
 \end{abstract}
@@ -136,13 +136,13 @@ Generating the dataset starts with defining the physical properties that the pot
 The configurational space associated with unit cells for calculating a property is then sampled.
 And from these trajectories, correlated sets of configurations are stored.
 Typically such a database contains $\mathcal{O}\left(10^5\right)$ atomic.
-Then representative environments are chosen into the actual training dataset; this was done e.g., for Fe~\cite{Dragoni2018AchievingIron} and W~\cite{Szlachta2014AccuracyTungsten} in the GAP framework.
+Then representative environments are chosen into the actual training dataset; this was done, e.g., for Fe~\cite{Dragoni2018AchievingIron} and W~\cite{Szlachta2014AccuracyTungsten} in the GAP framework.
 
 To circumvent the tedious task of curating an exhaustive training data set while maintaining transferability, several semi-automated protocols have been developed to sample the phase space of a material.
 \textit{Active learning} methods have used random perturbations of bulk crystalline structures to sample the phase space of Al, Mg and an Al-Mg alloy space~\cite{Zhang2019ActiveSimulation}.
 A second approach, \textit{self-guided learning}, has explored the phase space by using randomized unit cells paired with a selection of the most diverse structures and applied to C, Si and Ti.
-An \textit{on-the-fly learning} method has combined dft calculations with a machine learning for the calculation of melting points for Al, Si, Ge, Sn and MgO~\cite{Jinnouchi2019On-the-flyPointsb}.
-This approach circumvents expensive dft calculations of $99\,$\% of structures because they are accurately described by the potential developed during the previous history; only structures with an estimated error larger than a defined bound are recalculated via dft and then added to improve the machine-learned force field.
+An \textit{on-the-fly learning} method has combined DFT calculations with a machine learning for the calculation of melting points for Al, Si, Ge, Sn and MgO~\cite{Jinnouchi2019On-the-flyPointsb}.
+This approach circumvents expensive DFT calculations of $99\,$\% of structures because they are accurately described by the potential developed during the previous history; only structures with an estimated error larger than a defined bound are recalculated via DFT and then added to improve the machine-learned force field.
 
 A different approach is a hybrid approach combining an analytical bond order potential (BOP)
 form with a neural network that adjusts the BOP parametrization depending on the specific environment~\cite{PurjaPun0PhysicallyMaterials}.
@@ -165,7 +165,7 @@ In this work, we focus on Al-Cu as a case study for atomic modeling with NNPs. T
 Apostol and Mishin created an Angular Dependent Potential (ADP) for Al-Cu systems\cite{Apostol2011} ADP being an extension of MEAM but with additional angular terms included.
 In their work, they focused on modeling: formation energies, lattice constants, elastic constants, surface energies, and generalized stacking fault energies.
 The potential became very popular and was used in numerous studies of mechanical behavior of precipitates,
-in studying solute and precipitate strengthening\cite{Singh2013AnAlloy}\cite{Esteban-Manzanares2019}\cite{Wu2020AtomisticAlloys}. Thus this potential serves as an excellent benchmark to our own work. 
+in studying solute and precipitate strengthening\cite{Singh2013AnAlloy}\cite{Esteban-Manzanares2019}\cite{Wu2020AtomisticAlloys}. Thus this potential serves as an excellent benchmark to our work. 
 
 Our goal in this work was to attempt to construct an NNP that would improve the state of the art in precipitate modeling, where we use ADP a comparison.
 We carefully, systematically examined all the atomic-level properties that would be relevant to precipitate modeling: solute/vacancy interactions, formation energies, elastic constants, interface energies, generalized stacking fault energies and the as-mentioned entropic stability of $\theta'$ over $\theta$ phase.
@@ -182,25 +182,25 @@ with random atomic distortions to broaden the configuration space sampled.  For 
 We wanted valid elastic constants thermal and for all these structures, and made use of pymatgen\cite{Ong2013} and Phononpy\cite{Togo2015FirstScience} to generate the relevant deformations.
 We also included GSF structures to model mechanical response to dislocations accurately. Finally, we considered
 antisites and vacancies by swapping out elements of structures in the OQMD. A list of all categories of structures considered, and their number are in Table \ref{table:included_structures}.
-In general we made heavy use of the atomic simulation environment (ASE) for the generation of structures\cite{HjorthLarsen2017}.
+In general, we made heavy use of the atomic simulation environment (ASE) for the generation of structures\cite{HjorthLarsen2017}.
 
 \begin{table}[H]
 \begin{tabular}{l|c}%
 \hline%
 Structure Category& Number Structures\\%
 \hline%
-Prior Work (Al only) &	555 \\
-Phonons &	184 \\
-Bulk and Elastic  &	2163 \\
-Random FCC	& 990 \\
-Binary Solutes & 	690 \\
-Solute Stacking Fault &	54 \\
-Stacking Faults &	111 \\
-Surfaces &	87 \\
-Interfaces &	8 \\
-GSF ($\theta$ only)	 & 15 \\
+Prior Work (Al only) &    555 \\
+Phonons &    184 \\
+Bulk and Elastic  &    2163 \\
+Random FCC    & 990 \\
+Binary Solutes &     690 \\
+Solute Stacking Fault &    54 \\
+Stacking Faults &    111 \\
+Surfaces &    87 \\
+Interfaces &    8 \\
+GSF ($\theta$ only)     & 15 \\
 \hline
-Total &	4857 \\
+Total &    4857 \\
 \end{tabular}%
 \caption{All structures considered for training. 24 $\theta''$ GSF structures and 230 Antisite structures were 
 also looked at, but only for validation and not for training}
@@ -242,9 +242,8 @@ G^{radial}_i = \sum^{N_{atom}}_{j=1}e^{-\eta(R_{ij}-R_{s})^2}\cdot f_c(R_{ij})
 G^{angular}_i = 2^{1-\zeta}\sum_{j\neq i}\sum_{k\neq i,j}[ (1+\lambda\cdot cos\theta_{ijk})^\zeta \cdot e^{-\eta(R^2_{ij}+R^2_{ik}+R^2_{jk})}\cdot f_c(R_{ij}) \cdot f_c(R_{jk}) \cdot f_c(R_{jk}) ]
 \end{equation}
 
-Where $\eta$, $\zeta$ and $\lambda$ are the defining hyperparameters of a given symmetry function, $R_ij$ is 
-the distance between two given atoms, is a cutoff function. 
-We selected symmetry functions with the method of Imbalzano et al.\cite{Imbalzano2018}.
+Where $\eta$, $\zeta$ and $\lambda$ are the defining hyperparameters of a given symmetry function, $R_ij$ is the distance between two given atoms, is a cutoff function. 
+We selected symmetry functions with the method of Imbalzano et al. .\cite{Imbalzano2018}.
 Firstly, we generated a dense grid of 1192 unique radial and angular symmetry functions.
 We then performed a CUR decomposition and selected the 32 most descriptive Al-centered symmetry functions and the 32 most descriptive Cu-centered symmetry functions for a total of 64 symmetry functions.
 The training of the NNP potentials was handled by the n2p2 library\cite{Singraber2019ParallelPotentials}\cite{Singraber2019Library-BasedPotentials}.
@@ -252,15 +251,15 @@ We used 10\% of the structures for testing and the remainder for training.
 NNP weights were updated during the training using a fading memory Kalman filter.
 The exact settings used are in the supplementary materials.
 LAMMPS\cite{Plimpton1995} was used for running all calculations via the n2p2 interface. 
-For both NNP and ADP we used ASE\cite{HjorthLarsen2017} to generate and evaluate structures through a python API. 
+For both NNP and ADP, we used ASE\cite{HjorthLarsen2017} to generate and evaluate structures through a python API. 
 
-In this work, we trained several NNPs (N=40) to estimate expected errors. We selected the NNP with the lowest error for $C_{44}$ in aluminum to be the single representative example because of the importance and relative difficulty, as will be discussed later, of modeling $C_{44}$ correctly. All error bars center on the average of all trained NNPs and extends their standard deviation outwards. Thus, the representative NNP, i.e., the NNP with the closest $C_{44}$ to DFT, is not always close to the error bar center, nor does it always lie within the error bars. 
+In this work, we trained several NNPs (N=40) to estimate expected errors. We selected the NNP with the lowest error for $C_{44}$ in aluminum to be the single representative example because of the importance and relative difficulty of modeling $C_{44}$ correctly. All error bars center on the average of all trained NNPs and extends their standard deviation outwards. Thus, the representative NNP, i.e., the NNP with the closest $C_{44}$ to DFT, is not always close to the error bar center, nor does it always lie within the error bars. 
 
 
 \subsection{DFT Training Set Generation}
 We computed all calculations using GGA-PBE\cite{Perdew1996} with Quantum Espresso\cite{Giannozzi2009} with a 40Ry energy cutoff using a 80 kpoints/$\AA^-1$ Monkhorst-Pack grid\cite{Pack1977SpecialIntegrations} and 0.0441
 Ry of Methfessel-Paxton smearing\cite{Methfessel1989High-precisionMetals}.
-All pseudopotentials were chosen using the efficiency collection of the solid-state pseudopotential library\cite{Prandini2018}, with the exception of Cu, where the potential of Dal Corso\cite{DalCorso2014}
+All pseudopotentials were chosen using the efficiency collection of the solid-state pseudopotential library\cite{Prandini2018}, except Cu, where the potential of Dal Corso\cite{DalCorso2014}
 was found to have better accuracy and reduced computational cost.
 We used AiiDA\cite{Pizzi2016} to manage the large number of DFT computations needed for this study, as well as to ensure the calculations used very consistent settings, as is essential for ML potentials\cite{Dragoni2018AchievingIron}.
 
@@ -315,7 +314,7 @@ Formation energy is particularly well-handled by the NNP, with most errors well 
 in a few cases, ADP reverses the sign, i.e., predicting stable compounds as unstable and vice versa.
 However, for structures with high formation energy, both the NNP and ADP tend to struggle, often they do not end up relaxing to the same structure as DFT, or they have substantial errors.
 ADP regularly underestimates the atomic volume, even for critical structures: $\theta$ and $\theta'$ errors can be substantial.
-For elastic constants, we see that neither ADP nor NNP performs ideally.
+For elastic constants, we see that neither ADP nor NNP perform ideally.
 ADP does a reasonable job of capturing the precipitate structures and outperforms NNP on pure aluminum.
 However, we see that ADP often makes quite substantial errors in the elastic constants for intermediate compounds, while this is less the case for NNP. Interestingly it seems that the B2 structure poses a challenge to both ADP and most NNP.
 ADP predicts B2 to be extremely stable, while it has the highest error for any stable compound for NNP. 
@@ -352,7 +351,7 @@ Relevant structures are included in the training set.}%
 \end{figure}
 
 
-In Table \ref{table:solute_special}, we report further properties of dilute solutes: 3 and 4 atom clusters, misfit volume and solute-stacking fault interactions.
+In Table \ref{table:solute_special}, we report further properties of dilute solutes: 3 and 4 atom clusters, misfit volume, and solute-stacking fault interactions.
 Firstly we extend the binary results to simple clusters of 3 and 4 atoms, and compute the cluster formation energy, $\Delta E^{cluster}_{f,(N-X,X)}$,
 in the same manner as in Equation \ref{eqn:formE_structure}, which we make explicit below:
 
@@ -360,8 +359,8 @@ in the same manner as in Equation \ref{eqn:formE_structure}, which we make expli
 \Delta E^{cluster}_{f,(N-X,X)} = E^{cluster}_{N-X,X} - \sum_i E^{ref}_i
 \end{equation}
 
-Where the superscript defines the cluster by describing the relative neighboring indexes, same as in \cite{Gorbatov2019EffectiveAlloys}.
-These results cover the same clusters that were examined by Gorbatov et al.\cite{Gorbatov2019EffectiveAlloys}, with which they were able to produce GP-I and GP-II zone formation in a cluster-expansion model.
+The superscript defines the cluster by describing the neighboring indexes, same as in \cite{Gorbatov2019EffectiveAlloys}.
+These results cover the same clusters that were examined by Gorbatov et al. .\cite{Gorbatov2019EffectiveAlloys}, with which they were able to produce GP-I and GP-II zone formation in a cluster-expansion model.
 We note that the 111 and 111111, namely a compact triangle and tetrahedral of nearest neighbors respectively, are not compatible with the (100) plane formation that characterizes GP-I and GP-II zones, while the 111112 and 111122 clusters are.
 Naturally, we then find that the (100) plane-favoring clusters are energetically preferable, while the (100) plane incompatible clusters are not.
 We see that ADP gets the absolute values wrong, predicting all clusters as being overly stable; it also gets the relative trends of the 3-atom clusters wrong.
@@ -380,7 +379,7 @@ Namely, we computed:
 
 Where $E^{Sol-SF}_{N-1,1}$ is the energy of a stacking fault with a single solute,
 $E^{SF}_{N}$ is the energy of a stacking fault,
-$E^{Pristine}_{N-1,X}$ is the energy of single solute in pristine matrix (of the same size as the SF cell), 
+$E^{Pristine}_{N-1,X}$ is the energy of single solute in a pristine matrix (of the same size as the SF cell), 
 and $E^{Pristine}_{N}$ the energy of pristine matrix. 
 The results show that both potentials have good results (within ~50meV of DFT value).
 The NNP showing better accuracy for Cu in the Al matrix and ADP shows better results for Cu in the Al matrix.
@@ -408,7 +407,7 @@ Solute-Stacking fault structures are.}
 \end{table}
 
 \subsection{Interfaces}
-In this work, the coherent and semi-coherent versions of the $\theta''$ and $\theta'$ interfaces were studied while $\theta$ was omitted since it only forms incoherent interfaces \cite{Nie2014PhysicalAlloys}.
+In this work, the coherent and semicoherent versions of the $\theta''$ and $\theta'$ interfaces were studied while $\theta$ was omitted since it only forms incoherent interfaces \cite{Nie2014PhysicalAlloys}.
 We constructed these interfaces by taking their OQMD entries and stacking them on the Al matrix using the ASE \mintinline{python}{ase.build.stack} command.
 During relaxation, atoms are free to move, but the cell is held fixed. 
 
@@ -446,8 +445,8 @@ interfaces in order. Relevant structures are included in the t/raining set.}%
 \subsection{Generalized Stacking Faults}
 The most mechanically important GSF surface is that which coincides with the (111) plane of aluminum, which we display in Figure \ref{fig:GSF_ThetaDP_111} (b).
 To compute the GSF energy surface (GSFE), we follow the procedure detailed in \cite{Yin2017a}, which we briefly summarize here.
-Firstly, we reshape the base cell to find the smallest cell such that a1 and a2 lie exactly on the plane of interest, with a3 going out of the plane.
-Then for each point $\vec{R}$ of the GSF the a3  cell vector was correspondingly shifted,
+Firstly, we reshape the base cell to find the smallest cell such that a1 and a2 lie on the plane of interest, with a3 going out of the plane.
+Then for each point, $\vec{R}$, of the GSF the a3  cell vector was correspondingly shifted,
 then both the atoms and the a3 cell vector were allowed to relax, but only in the z-direction.
 The GSF energy at a displacement $\gamma_{GSF\vec{R}}$ was calculated using: 
 \begin{equation}
@@ -457,11 +456,11 @@ Where $E^{GSF}_{\vec{R}}$ is the total energy of the GSF displaced at $\vec{R}$,
 the energy of the pristine structure without deformation and $A$ is the area spanned by the GSF surface.
 In Figure \ref{fig:GSF_ThetaDP_111} (a), we see the results for the entire GSF surface.
 The NNP potential gives a smooth GSFE, with clear peaks and valleys in the energy corresponding with the underlying atomic positions.
-The GSFE of the ADP potential, conversely, is substantially less smooth; there is also a noticeable lack of radial symmetry and high and low energy sites,  with a number of sharp ridges extending across high energy regions.
+The GSFE of the ADP potential, conversely, is substantially less smooth; there is also a noticeable lack of radial symmetry and high and low energy sites,  with sharp ridges extending across high energy regions.
 Most troubling for ADP, is that regions of the $\theta''$ surface are unphysically negative in energy, this severely compromises ADP to give high-quality results for dislocation-precipitate interactions.
 Importantly, NNP gives highly accurate energies, even though we did not train the NNP for this GSFE.
-In Figure \ref{fig:GSF_Theta_0m11} we detail a further example of using the NNP for evaluating a GSFE, this time for the (0$\overline{1}$1) for $\theta$ phase. 
-Firstly, we see that by this time, including structures in the training set, we attain a very high accuracy in the GSF energy. 
+In Figure \ref{fig:GSF_Theta_0m11}, we detail a further example of using the NNP for evaluating a GSFE, this time for the (0$\overline{1}$1) for $\theta$ phase. 
+Firstly, we see that by this time, including structures in the training set, we attain very high accuracy in the GSF energy. 
 Secondly, regions without training show a smooth variation, with peaks and valleys in energy that correspond to the atomic structure, conversely, ADP has multiple sharp shifts in the GSFE, which appear to be artifacts.  Thus we see that NNPs can accurately scout the GSFE, and we can improve them by including a few DFT structures if needed. 
 
 \begin{figure}[H]%
@@ -504,7 +503,7 @@ Indexed sites are included in the training set.}
 \end{figure}
 
 \subsection{Antisites and Vacancies}
-Antisites and Vacancies were computed for every OQMD structure in the following manner.
+Antisite and vacancy formation energies were calculated for every OQMD structure in the following manner.
 Firstly, the structure was allowed to be completely relaxed.
 If the structure maintained the same symmetry group after full cell and atomic relaxation, we analyzed it for unique atomic sites using pymatgen.
 Then the cell was duplicated, such as to generate cells with a minimum of 108 atoms to minimize defect-defect interactions.
