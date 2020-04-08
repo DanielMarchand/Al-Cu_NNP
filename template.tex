@@ -281,6 +281,22 @@ AiiDA stored the results of each calculation, which we later parsed using a dedi
 \end{figure}
 
 \section{Results and Discussion}
+
+\subsection{Test and Training Errors}
+
+As mentioned in the methodology, we trained 50 NNPs, with 90\% of the structures set for training and 10\% set for testing.
+Figure \ref{} shows the errors in both the testing and training samples for a single NNP.
+Here we have chosen to demonstrate the results for the NNP with the lowest C44 error in pure Aluminum, but the general trends hold for all NNPs we computed. We examine the root mean square error (RMSE) for all structures $i$.
+\begin{equation}
+    RMSE = (\sum_i (E^{DFT}_i - E^{NNP}_i)^2)^\frac{1}{2}
+\end{equation}
+We see that the testing error is much larger than the training error.
+However, this large error is primarily due to a single outlier, as can be seen in  Figure \ref{}.
+Removing this massive outlier lowers the testing error from 26.5 meV/atom to 3.46 meV/atom.
+The outlier structure in question is for Al under massive compression, $a_0$ = 3.27$\AA$.
+For our purposes, the mechanical properties of Aluminum alloys, we can consider this being beyond the compression range we would be interested in for almost all applications.
+In general, the NNP breaks down at compressions beyond $\frac{a}{a_0}$, as can be seen in by the plots in section \ref{} in the supplementary material. 
+
 \subsection{Bulk Properties}
 
 Figure \ref{fig:matparam_purestats} shows the performance of NNP and ADP against DFT on fundamental properties: lattice and elastic constants, surface and stacking fault energies, for pure Al and Cu.
