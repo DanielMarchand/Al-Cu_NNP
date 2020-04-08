@@ -300,9 +300,10 @@ Relevant structures are included in the training set. }%
 \end{figure}
 All the Al-Cu structures in the OQMD were evaluated for this potential, as described previously in the methodology.
 The NNP outperforms ADP for formation energy, atomic volume, and elastic constants for most OQMD structures, as can be seen in Figure \ref{fig:matparam_stats1}.
-We compute structure formation energy $\Delta E^{structure}_f$ of all structures as relative to bulk FCC Al and dilute Cu in matrix:
+We compute structure formation energy $\Delta E^{structure}_f$ of all structures,
+, as relative to bulk FCC Al and dilute Cu in matrix:
 \begin{equation} \label{eqn:formE_structure}
-\Delta E^{structure}_f = E^{structure} - \sum_i E^{ref}_i
+\Delta E^{structure}_f = E^{structure}_N - nE^{ref}_Al-(N-n)E^{ref}_{Cu}
 \end{equation}
 \begin{equation} \label{eqn:formRef_Al}
 E^{ref}_{Al} = E^{FCC}_{Al}
@@ -310,7 +311,7 @@ E^{ref}_{Al} = E^{FCC}_{Al}
 \begin{equation} \label{eqn:formRef_Cu}
 E^{ref}_{Cu} = E^{1sol}_{255Al,1Cu} - 255E^{FCC}_{Al}
 \end{equation}
-Formation energy is particularly well-handled by the NNP, with most errors well within a few meV/atom, while ADP often highly overestimates or underestimates the formation energy;
+Where, for a given structure, $N$ is the total number of atoms, $n$ is the number of Al atoms, and $N-n$ the number of Cu atoms. Formation energy is particularly well-handled by the NNP, with most errors well within a few meV/atom, while ADP often highly overestimates or underestimates the formation energy;
 in a few cases, ADP reverses the sign, i.e., predicting stable compounds as unstable and vice versa.
 However, for structures with high formation energy, both the NNP and ADP tend to struggle, often they do not end up relaxing to the same structure as DFT, or they have substantial errors.
 ADP regularly underestimates the atomic volume, even for critical structures: $\theta$ and $\theta'$ errors can be substantial.
