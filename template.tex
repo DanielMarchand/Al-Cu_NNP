@@ -263,20 +263,20 @@ All pseudopotentials were chosen using the efficiency collection of the solid-st
 was found to have better accuracy and reduced computational cost.
 We used AiiDA\cite{Pizzi2016} to manage the large number of DFT computations needed for this study, as well as to ensure the calculations used very consistent settings, as is essential for ML potentials\cite{Dragoni2018AchievingIron}.
 
-Here we briefly outline how we used AiiDA to manage our DFT calculations, as can be seen in Figure \ref{fig:aiida_methods},
-and we provide all codes and all computed data in the supplementary.
+Here we briefly outline how we used AiiDA to manage our DFT calculations, as can be seen in Figure \ref{fig:aiida_methods}.
 Firstly, we generated a set of scripts to create structures, at least one script for each of the categories mentioned in Table \ref{table:included_structures}.
-These structures were stored in separate AiiDA structure groups.
+These structures were stored in separate AiiDA \lstinline{Structure Groups}.
 In some cases, e.g., for importing the OQMD structures or generating phonon-displaced structures, we used an external script to create structures, which we then uploaded into AiiDA.
 We then used a wrapper script that allowed us to apply a consistent set of parameters, kpoint spacing, and pseudopotentials to generate an AiiDA workchain for each structure.
 Each workchain managed a QuantumEspresso calculation on the HPC cluster, 
 where events such as job time outs and result parsing were handled automatically.
 The script could launch in several modes to created SCF, atomic-relaxation, atomic and cell relaxation, or elasticity calculations, as needed in each case.
 AiiDA stored the results of each calculation, which we later parsed using a dedicated Jupyter\cite{Kluyver2016JupyterWorkflows} notebook in each case. 
+We provide all codes and all computed data in the supplementary.
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.0\textwidth,center]{figures/recalculateDBschematic.png}%
-\caption{Schematic of AiiDA usage}%
+\caption{Schematic of AiiDA usage.}%
 \label{fig:aiida_methods}
 \end{figure}
 
@@ -457,6 +457,7 @@ ADP correctly predicts the general trends but makes several serious errors.
 The coherent $\theta'$ interface has much too high an energy, while all the $\theta''$ interface is predicted to have negative energy.
 The $\theta''$ interface is particularly challenging because it has such low interface energy; therefore, it is easy for the potential to predict this to be negative rather than positive.
 However, our representative NNP has high quantitative accuracy on all these interfaces.
+Detailed plots showing all points considered for calculation for DFT, ADP and all NNPs can be found in section \ref{sct:add_interface} in the supplementary materials.
 
 \begin{figure}[H]%
 \centering%
@@ -618,10 +619,25 @@ Any new Al-Cu potentials now have a rich, carefully-calculated, and well-curated
 \end{figure}
 
 \subsection{Additional Interface Formation Energy Plots} \label{sct:add_interface}
+
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=0.7\textwidth,center]{figures/EOS_AlCu-NNP_ThetaDP.png}%
-\caption{$\theta''$ equation of state plot}%
+\includegraphics[width=0.7\textwidth,center]{figures/InterfaceSlope_ThetaP_SemiCoherent.png}%
+\end{figure}
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=0.7\textwidth,center]{figures/InterfaceSlope_ThetaP_Coherent.png}%
+\end{figure}
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=0.7\textwidth,center]{figures/InterfaceSlope_ThetaDP_SemiCoherent.png}%
+\end{figure}
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=0.7\textwidth,center]{figures/InterfaceSlope_ThetaDP_Coherent.png}%
 \end{figure}
 
 
