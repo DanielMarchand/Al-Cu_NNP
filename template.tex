@@ -28,51 +28,44 @@
 \usemintedstyle{vs}
 \usepackage{subfig}
 \usepackage{multirow}
+\usepackage{longtable}
+\usepackage{authblk}
+
 
 \renewcommand{\arraystretch}{1.5}
 
 
-
+\begin{document}
 \title{A Comprehensive Neural Network Potential for Al-Cu}
 
-\author{
- Daniel Marchand \\
-  Institute of Materials Science \\
-  École Polytechnique Fédérale de Lausanne \\
-  CH-1015, Vaud, Switzerland \\
-  \texttt{daniel.marchand@epfl.ch} \\
-  %% examples of more authors
-   \And
- Albert Glensk \\
-  Institute of Mechanical Engineering \\
-  École Polytechnique Fédérale de Lausanne \\
-  CH-1015, Vaud, Switzerland \\
-  \texttt{albert.glensk@epfl.ch} \\
-  \And
- William Curtin \\
-  Institute of Mechanical Engineering \\
-  École Polytechnique Fédérale de Lausanne \\
-  CH-1015, Vaud, Switzerland \\
-  \texttt{william.curtin@epfl.ch} \\
-  %% \AND
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-}
+\author[1]{Daniel Marchand}
+\author[1]{Albert Glensk}
+\author[1]{William Curtin}
+\affil[1]{Institute of Mechanical Engineering, École Polytechnique Fédérale de Lausanne, CH-1015, Vaud, Switzerland}
 
-\begin{document}
 \maketitle
+
+%\author{
+% Daniel Marchand \\
+%  Institute of Materials Science \\
+%  École Polytechnique Fédérale de Lausanne \\
+%  CH-1015, Vaud, Switzerland \\
+%  \texttt{daniel.marchand@epfl.ch} \\
+%  %% examples of more authors
+%   \And
+% Albert Glensk \\
+%  Institute of Mechanical Engineering \\
+%  École Polytechnique Fédérale de Lausanne \\
+%  CH-1015, Vaud, Switzerland \\
+%  \texttt{albert.glensk@epfl.ch} \\
+%  \And
+% William Curtin \\
+%  Institute of Mechanical Engineering \\
+%  École Polytechnique Fédérale de Lausanne \\
+%  CH-1015, Vaud, Switzerland \\
+%  \texttt{william.curtin@epfl.ch} \\
+%}
+
 \begin{abstract}
 Precipitates are fundamental to the strengthening of aluminum alloys, and understanding them is paramount for optimized processing.
 Precipitates are highly complex, and their formation sequence, kinetics, and the resulting influence on mechanical properties must be studied at the atomic scale, particularly during early-stage nucleation and growth.
@@ -173,49 +166,38 @@ We carefully, systematically examined all the atomic-level properties that would
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Methodology}
-\subsection{Atomic Structures}
+\subsection{Atomic Structures} \label{scn:atomic_structures}
 We wished to study and include as many atomic structures relevant to precipitation as possible.
- Here we briefly outline the structures we considered in this study, with further details in the relevant sections and the supplementary.  
-Firstly we needed a broad range of bulk Al-Cu compounds and made use of all those in the Open Quantum Materials Database \cite{Kirklin2015}.
-Early-stage clustering was considered by looking at 2, 3, and 4 atom clusters of dilute Cu in Al. We also looked at a large number of 32 atom FCC supercells spanning all concentrations ratios of Al/Cu in units of 5\% 
-with random atomic distortions to broaden the configuration space sampled.  For interfaces, we considered both the coherent and semicoherent interfaces of both $\theta''$ and $\theta'$.  We also considered surface energies,  stable and unstable stacking faults, solute-stacking fault interactions for pure Al and Cu.
-We wanted valid elastic constants thermal and for all these structures, and made use of pymatgen\cite{Ong2013} and Phononpy\cite{Togo2015FirstScience} to generate the relevant deformations.
-We also included GSF structures to model mechanical response to dislocations accurately. Finally, we considered
-antisites and vacancies by swapping out elements of structures in the OQMD. A list of all categories of structures considered, and their number are in Table \ref{table:included_structures}.
-In general, we made heavy use of the atomic simulation environment (ASE) for the generation of structures\cite{HjorthLarsen2017}.
+Here we briefly outline the structures we considered in this study, with further details in the relevant sections and the supplementary.  
+Firstly we needed a broad range of bulk Al-Cu compounds and made use of all those in the Open Quantum Materials Database \cite{Kirklin2015}, and we also added the $\theta$ and $\theta''$ for a total of 62 Al-Cu structures. 
+For each of these structures, we relaxed them, allowing both the cell shape and atomic positions to relax.
+After relaxation, we found elastic constants by applying strains of magnitude -0.01, -0.005, 0.005, 0.01 on
+each structure, for each $\epsilon_{1..6}$ strain (Voigt notation) for a maximum of 24 strained structures.
+We filtered out symmetrically equivalent strains, e.g., for FCC structures only $\epsilon_1$ and $\epsilon_4$
+strains were applied.
+Pymategen\cite{Ong2013} was used to determine and apply unique strains. 
+Structures which maintained the same symmetry group before and after relaxation were considered to be 'stable,'
+we found 45 Al-Cu structures maintained their symmetry group during relaxation. 
+This procedure to compute the elastic constants is similar to previous work by DeJong et al. \cite{DeJong2015}.
+To ensure the NNP had structures relevant for modeling important properties involving phonons, e.g., the $\theta'$ $\rightarrow$ $\theta$ transition, we added atomically-distorted structures using Phonopy\cite{Togo2015FirstScience}.
+We took as input 45 structurally-stable OQMD structures, i.e., the symmetry group was unchanged after DFT relaxation.
+Then, we generated supercells to ensure a minimum of 108 atoms in each cell, while trying to create as cubic a supercell structure as possible.
+Finally, Phononpy was used to find the minimum set of displacements, such as possible as to generate the dynamical matrix.
+E.g., in this work, we created three 144 atom supercells for the $\theta$ phase, each with a small atomic displacement on a single atom.  
 
-\begin{table}[H]
-\begin{tabular}{l|c}%
-\hline%
-Structure Category& Number Structures\\%
-\hline%
-Prior Work (Al only) &    555 \\
-Phonons &    184 \\
-Bulk and Elastic  &    2163 \\
-Random FCC    & 990 \\
-Binary Solutes &     690 \\
-Solute Stacking Fault &    54 \\
-Stacking Faults &    111 \\
-Surfaces &    87 \\
-Interfaces &    8 \\
-GSF ($\theta$ only)     & 15 \\
-\hline
-Total &    4857 \\
-\end{tabular}%
-\caption{All structures considered for training. 24 $\theta''$ GSF structures and 230 Antisite structures were 
-also looked at, but only for validation and not for training}
-\label{table:included_structures}
-\end{table}
+Binary solutes and vacancies: Cu-Cu, Cu-Vac, Vac-Vac, were trained up to 7 nearest neighbors in a 256 supercell for Al matrix. 
+In Cu matrix, Al-Al, Al-Vac, and Vac-Vac binaries were trained on the first 4 nearest neighbors in a 108 atom supercell. 
+We also looked at a large number of 32 atom FCC supercells spanning all concentrations ratios of Al/Cu in units of 5\%  with random atomic distortions to broaden the configuration space sampled.
+In Section \ref{sct:solute_results}, we go over additional solute structures not included in training but were examined for verification.
+Similarly, in Section \ref{sct:antsite_results}, we consider antisites and vacancies for all stable OQMD structures, but these are not included in the training set.
 
-
-The OQMD was the primary source of structures used when training and
-testing the NNP across a broad range of Al-Cu compounds. $\theta$ and $\theta''$ were not in the OQMD, and we
-included them as well manually for a total of 62 structures. Each of these structures was then fully relaxed, 
-both in cell dimensions and atomic positions. Because we wished to avoid testing duplicates, only structures that retained the same symmetry group before and after relaxation were explicitly compared against the ADP and NNP
-potentials (N=47). The elastic tensor was computed similarly to \cite{DeJong2015}, where a finite set of strains were
-applied and fitted to the associated stresses. The pymatgen package\cite{Ong2013} determined the minimal number of
-deformations required for each structure based on its symmetry, and only these were used. 
-Unless stated otherwise, we computed formation energies using FCC Al and FCC Cu as the corresponding ground states.
+We wished to provide a comprehensive set of mechanically relevant interfaces as possible. 
+To that end, we included structures for four interfaces: semicoherent $\theta''$, coherent $\theta''$,
+semicoherent $\theta'$ and coherent $\theta'$. The $\theta$ phase does not have a coherent interface\cite{Nie2014PhysicalAlloys} with Al-bulk, so we did not examine it explicitly. 
+We added structures most relevant for bulk fracture: (111) (110) and (100) in pure Al and pure Cu as well as
+the stable and unstable stacking fault structures for these elements.
+We added structures for the (0$\overline{1}$1) GSF surface in $\theta$ phase, as it is known to be of
+great importance for laser-sintered laminated structures\cite{Wang2018} though as will be discussed in Section \ref{sct:gsf_results}, the NNP performs well for GSF surfaces even without training. 
 
 \subsection{NNP selection and Evaluation of Errors}
 In this work, we generated NNPs using the methodology developed by Behler and Parrinello\cite{Behler2007}.
@@ -243,40 +225,86 @@ G^{angular}_i = 2^{1-\zeta}\sum_{j\neq i}\sum_{k\neq i,j}[ (1+\lambda\cdot cos\t
 \end{equation}
 
 Where $\eta$, $\zeta$ and $\lambda$ are the defining hyperparameters of a given symmetry function, $R_ij$ is the distance between two given atoms, is a cutoff function. 
-We selected symmetry functions with the method of Imbalzano et al. .\cite{Imbalzano2018}.
+We selected symmetry functions with the method of Imbalzano et al. \cite{Imbalzano2018}.
 Firstly, we generated a dense grid of 1192 unique radial and angular symmetry functions.
-We then performed a CUR decomposition and selected the 32 most descriptive Al-centered symmetry functions and the 32 most descriptive Cu-centered symmetry functions for a total of 64 symmetry functions.
+We then performed a CUR decomposition and selected the 32 most descriptive Al-centered symmetry functions and the 32 most descriptive Cu-centered symmetry functions for a total of 64 symmetry functions. 
+An explicit listing of symmetry function parameters used can be found in Section \ref{sct:symmfunc_hyperparam}.
+
 The training of the NNP potentials was handled by the n2p2 library\cite{Singraber2019ParallelPotentials}\cite{Singraber2019Library-BasedPotentials}.
 We used 10\% of the structures for testing and the remainder for training.
 NNP weights were updated during the training using a fading memory Kalman filter.
-The exact settings used are in the supplementary materials.
+We used the following loss function while training the NNP.
+
+%ADD IN THE DESCRIPTION HERE
+\begin{equation}
+\Gamma^{loss} = \frac{1}{N_{struct}} \sum^{N_{struct}}_{i=1}((E^{NNP}_i-E^{DFT}_i)^2+\frac{\beta}{3N^{atom}_i}\sum^{3N^{atom}_{i}}_{j=1}(F^{NNP}_{i,j}-F^{DFT}_{i,j})^2)
+\end{equation}
+
+Where $\Gamma^{loss}$ is the amount of loss to be minimized, errors are summed over all structures $N_{struct}$ each iteration of training. 
+Only 2.1\% of forces were used during training, to keep forces from dominating energies in the loss function since there is $3N_{atoms}$ forces in each structure but only one energy. 
+The $\beta$ also controls the relative influence of forces on the loss function, in this study $\beta = 8$.
+Force losses were summed over each: X, Y, Z direction as shown in the equation above. 
+Note that this formulation tends to be biased towards larger structures since each atom independently contributes to the error. 
+The exact input settings used are provided in the supplementary materials.
+
 LAMMPS\cite{Plimpton1995} was used for running all calculations via the n2p2 interface. 
 For both NNP and ADP, we used ASE\cite{HjorthLarsen2017} to generate and evaluate structures through a python API. 
-
-In this work, we trained several NNPs (N=40) to estimate expected errors. We selected the NNP with the lowest error for $C_{44}$ in aluminum to be the single representative example because of the importance and relative difficulty of modeling $C_{44}$ correctly. All error bars center on the average of all trained NNPs and extends their standard deviation outwards. Thus, the representative NNP, i.e., the NNP with the closest $C_{44}$ to DFT, is not always close to the error bar center, nor does it always lie within the error bars. 
+In this work, we trained several NNPs (N=40) to estimate expected errors.
+We selected the NNP with the lowest error for $C_{44}$ in aluminum to be the single representative example because of the importance and relative difficulty of modeling $C_{44}$ correctly.
+All error bars center on the average of all trained NNPs and extends their standard deviation outwards.
+Thus, the representative NNP, i.e., the NNP with the closest $C_{44}$ to DFT, is not always close to the error bar center, nor does it always lie within the error bars. 
 
 
 \subsection{DFT Training Set Generation}
-We computed all calculations using GGA-PBE\cite{Perdew1996} with Quantum Espresso\cite{Giannozzi2009} with a 40Ry energy cutoff using a 80 kpoints/$\AA^-1$ Monkhorst-Pack grid\cite{Pack1977SpecialIntegrations} and 0.0441
-Ry of Methfessel-Paxton smearing\cite{Methfessel1989High-precisionMetals}.
+We computed all calculations using GGA-PBE\cite{Perdew1996} with Quantum Espresso\cite{Giannozzi2009} (QE) with a
+544eV (40Ry) energy cutoff 
+using a 80 kpoints/$\AA^-1$ Monkhorst-Pack grid\cite{Pack1977SpecialIntegrations},
+20x20x20 kpoints for a 4.04$\AA^3$ conventional cubic FCC cell,
+and 0.6eV (0.0441Ry) of Methfessel-Paxton smearing\cite{Methfessel1989High-precisionMetals}.
 All pseudopotentials were chosen using the efficiency collection of the solid-state pseudopotential library\cite{Prandini2018}, except Cu, where the potential of Dal Corso\cite{DalCorso2014}
 was found to have better accuracy and reduced computational cost.
-We used AiiDA\cite{Pizzi2016} to manage the large number of DFT computations needed for this study, as well as to ensure the calculations used very consistent settings, as is essential for ML potentials\cite{Dragoni2018AchievingIron}.
 
-Here we briefly outline how we used AiiDA to manage our DFT calculations, as can be seen in Figure \ref{fig:aiida_methods}.
-Firstly, we generated a set of scripts to create structures, at least one script for each of the categories mentioned in Table \ref{table:included_structures}.
-These structures were stored in separate AiiDA \lstinline{Structure Groups}.
+We used AiiDA\cite{Pizzi2016, Huber2020AiiDAProvenance} to manage the large number of DFT computations needed for this study, as well as to ensure the calculations used very consistent settings, as is essential for ML potentials\cite{Dragoni2018AchievingIron}.
+A schematic of how we used AiiDA can be seen in Figure \ref{fig:aiida_methods} with a description of key terms in the figure below:
+\begin{itemize}
+    \item \mintinline{python}{Structure Group}  A group of structures stored in the AiiDA database
+    \item \mintinline{python}{parameters}  A set of parameters stored in the AiiDA database. These are the settings, e.g., energy cutoff, smearing, to be applied to each calculation
+    \item \mintinline{python}{pseudopotentials}  A set of pseudopotentials stored in the AiiDA database 
+    \item \mintinline{python}{kpoint spacing}  The kpoint distance to be used in each calculation. 
+    \item \mintinline{python}{aiida_launch_workflow.py}  A wrapper script for launching \mintinline{python}{WorkChains} 
+    \item \mintinline{python}{Calculation Group}  A group of \mintinline{python}{WorkChains} in the AiiDA database 
+    \item \mintinline{python}{WorkChain}  An AiiDA object that encapsulates a set of \mintinline{python}{CalcJobs} to 
+                                          achieve a high-level workflow goal. E.g., a cell relaxation requiring 
+                                          multiple restarts, or to compute elastic constants of a material. 
+    \item \mintinline{python}{CalcJob}    An AiiDA object that directly interfaces with an external code, 
+                                          in this work QE, to submit, launch, run, collect and parse on a HPC 
+                                          cluster. In this work all \mintinline{python}{CalcJobs} are created and
+                                          managed by a parent \mintinline{python}{WorkChain}.
+    
+\end{itemize}
+
+We used AiiDA to managed our DFT calculations in the following manner.
+Firstly, we generated a set of scripts to create structures, at least one script for each of the categories mentioned in Section \ref{scn:atomic_structures}.
+These structures were stored in separate AiiDA \mintinline{python}{Structure Groups}.
 In some cases, e.g., for importing the OQMD structures or generating phonon-displaced structures, we used an external script to create structures, which we then uploaded into AiiDA.
-We then used a wrapper script that allowed us to apply a consistent set of parameters, kpoint spacing, and pseudopotentials to generate an AiiDA workchain for each structure.
-Each workchain managed a QuantumEspresso calculation on the HPC cluster, 
+We then used a wrapper script that allowed us to apply a consistent set of parameters, kpoint spacing, and pseudopotentials to generate an AiiDA \mintinline{python}{WorkChain} for each structure in the \mintinline{python}{Structure Group}.
+Each \mintinline{python}{WorkChain} managed a QuantumEspresso calculation as a \mintinline{python}{CalcJob} on the HPC cluster, 
 where events such as job time outs and result parsing were handled automatically.
-The script could launch in several modes to created SCF, atomic-relaxation, atomic and cell relaxation, or elasticity calculations, as needed in each case.
-AiiDA stored the results of each calculation, which we later parsed using a dedicated Jupyter\cite{Kluyver2016JupyterWorkflows} notebook in each case. 
-We provide all codes and all computed data in the supplementary.
+The script could launch in several modes to create atomic-relaxation, atomic and cell relaxation, no-relaxation or elasticity calculations, as needed in each case.
+AiiDA stored the results of each calculation, which we later parsed using a dedicated Jupyter\cite{Kluyver2016} notebook in each case. 
+We provide all codes and all computed data will be uploaded on the web via Materials Cloud\cite{Talirz2020MaterialsScience}.
+
+% Figure caption
+%Structures are stored in the database in a \lstinline{Structure Group}%
+%Jobs are launched with the \lstinline{aiida_launch_workflow.py} wrapper script. Each \lstinline{WorkChain}
+%object manages a \lstinline{CalcJob} where common events, e.g., job submission, continuation of jobs past cluster
+%time outs are handled automatically. Outputs such as computed energies, forces, pressures and atomic structures are stored automatically in the database. Results are organized in \lstinline{Calculation Groups} typically one
+%for each \lstinline{Structure Group} of interest.
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1.0\textwidth,center]{figures/recalculateDBschematic.png}%
-\caption{Schematic of AiiDA usage.}%
+\caption{Schematic of AiiDA usage.
+}
 \label{fig:aiida_methods}
 \end{figure}
 
@@ -288,7 +316,7 @@ As mentioned in the methodology, we trained 50 NNPs, with 90\% of the structures
 Figure \ref{fig:rsme_plot} shows the errors in both the testing and training samples for a single NNP.
 Here we have chosen to demonstrate the results for the NNP with the lowest C44 error in pure Aluminum, but the general trends hold for all NNPs we computed. We examine the root mean square error (RMSE) for all structures $i$.
 \begin{equation}
-    RMSE = (\sum_i (E^{DFT}_i - E^{NNP}_i)^2)^\frac{1}{2}
+    RMSE = (\frac{1}{N}\sum_i (E^{DFT}_i - E^{NNP}_i)^2)^\frac{1}{2}
 \end{equation}
 We see that the testing error is much larger than the training error.
 However, this large error is primarily due to a single outlier, as can be seen in  Figure \ref{fig:rsme_plot}.
@@ -302,7 +330,7 @@ In general, the NNP breaks down at compressions beyond $\frac{a}{a_0} ~= 0.8$, a
 \includegraphics[width=1.0\textwidth,center]{figures/plot_nnperrors.png}%
 \caption{Plot of test and training errors for NNP.
 Note the large test error outlier, an order of magnitude larger than the next-greatest test error. }%
-\label{fst error ig:rsme_plot}
+\label{fig:rsme_plot}
 \end{figure}
 
 \subsection{Bulk Properties}
@@ -339,6 +367,8 @@ Where, for a given structure, $N$ is the total number of atoms, $n$ is the numbe
 in a few cases, ADP reverses the sign, i.e., predicting stable compounds as unstable and vice versa.
 However, for structures with high formation energy, both the NNP and ADP tend to struggle, often they do not end up relaxing to the same structure as DFT, or they have substantial errors.
 ADP regularly underestimates the atomic volume, even for critical structures: $\theta$ and $\theta'$ errors can be substantial.
+Elastic strain from lattice mismatch is one of the essential terms in evaluating precipitate formation energies.
+The lattice mismatch between precipitate and matrix is a function of atomic volume, so this term must be computed with precision.  
 For elastic constants, we see that neither ADP nor NNP perform ideally.
 ADP does a reasonable job of capturing the precipitate structures and outperforms NNP on pure aluminum.
 However, we see that ADP often makes quite substantial errors in the elastic constants for intermediate compounds, while this is less the case for NNP. Interestingly it seems that the B2 structure poses a challenge to both ADP and most NNP.
@@ -348,12 +378,14 @@ ADP predicts B2 to be extremely stable, while it has the highest error for any s
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1\textwidth,center]{figures/matparam_stats1.png}%
-\caption{Comparison of: formation energy (meV), atomic volume (Ang$^3$), elastic constants C$_{11}$, C$_{21}$ and C$_{44}$ (GPa) across NNP, ADP and DFT for all structures in the OQMD. 
+\caption{Comparison of: formation energy, atomic volume, elastic constants C$_{11}$, C$_{21}$ and C$_{44}$ across NNP, ADP and DFT for all structures in the OQMD.
+ADP predicts large errors for Cu-Cu binding with first nearest neighbors to be far too bound (-318 meV)
+while third and fourth nearest neighbors are far too repulsive (108meV and 175meV). 
 Relevant structures are included in the training set. }
 \label{fig:matparam_stats1}
 \end{figure}
 
-\subsection{Solutes}
+\subsection{Solutes} \label{sct:solute_results}
 The binary formation energies for Cu, Al, and Vacancy in Al or Cu matrix was computed with following:
 \begin{equation}
 \Delta E^{bind}_f = E^{2sol}_{N-2,X,Y}-E^{1sol}_{N-1,X}-E^{1sol}_{N-1,Y}+E^{pure}_N
@@ -384,7 +416,8 @@ in the same manner as in Equation \ref{eqn:formE_structure}, which we make expli
 \Delta E^{cluster}_{f,(N-X,X)} = E^{cluster}_{N-X,X} - \sum_i E^{ref}_i
 \end{equation}
 
-The superscript defines the cluster by describing the neighboring indexes, same as in \cite{Gorbatov2019EffectiveAlloys}.
+The superscript defines the cluster by describing the neighboring indexes, same as in \cite{Gorbatov2019EffectiveAlloys} and illustration may be found in Figure \ref{fig:atomview_clusters} 
+in the supplementary.
 These results cover the same clusters that were examined by Gorbatov et al. .\cite{Gorbatov2019EffectiveAlloys}, with which they were able to produce GP-I and GP-II zone formation in a cluster-expansion model.
 We note that the 111 and 111111, namely a compact triangle and tetrahedral of nearest neighbors respectively, are not compatible with the (100) plane formation that characterizes GP-I and GP-II zones, while the 111112 and 111122 clusters are.
 Naturally, we then find that the (100) plane-favoring clusters are energetically preferable, while the (100) plane incompatible clusters are not.
@@ -468,7 +501,7 @@ interfaces in order. Relevant structures are included in the t/raining set.}%
 \label{fig:interface_energies}
 \end{figure}
 
-\subsection{Generalized Stacking Faults}
+\subsection{Generalized Stacking Faults} \label{sct:gsf_results}
 The most mechanically important GSF surface is that which coincides with the (111) plane of aluminum, which we display in Figure \ref{fig:GSF_ThetaDP_111} (b).
 To compute the GSF energy surface (GSFE), we follow the procedure detailed in \cite{Yin2017a}, which we briefly summarize here.
 Firstly, we reshape the base cell to find the smallest cell such that a1 and a2 lie on the plane of interest, with a3 going out of the plane.
@@ -528,7 +561,7 @@ Indexed sites are included in the training set.}
 \label{fig:GSF_Theta_0m11}
 \end{figure}
 
-\subsection{Antisites and Vacancies}
+\subsection{Antisites and Vacancies} \label{sct:antsite_results}
 Antisite and vacancy formation energies were calculated for every OQMD structure in the following manner.
 Firstly, the structure was allowed to be completely relaxed.
 If the structure maintained the same symmetry group after full cell and atomic relaxation, we analyzed it for unique atomic sites using pymatgen.
@@ -586,6 +619,101 @@ Any new Al-Cu potentials now have a rich, carefully-calculated, and well-curated
 \newpage
 \appendix
 \section{Supplementary}
+\subsection{Symmetry Function Hyperparameters} \label{sct:symmfunc_hyperparam}
+
+\bgroup
+\def\arraystretch{1.2}
+\begin{longtable}{ccccc}
+\caption{Hyperparameters for the radial symmetry functions.} \\
+\hline
+Element1 & Element2 & $\eta$ & $r_2$ & $r_c$ \\
+\hline
+\hline
+Al &  Al & $1.117 \times 10^{-1}$ & $1.301 \times 10^{1}$ & $1.600 \times 10^{1}$ \\
+Al &  Al & $1.166 \times 10^{-1}$ & $7.071 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Al &  Al & $1.350 \times 10^{-1}$ & $9.170 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Al &  Al & $1.560 \times 10^{-2}$ & $0.000 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Al &  Al & $1.689 \times 10^{-1}$ & $1.057 \times 10^{1}$ & $1.600 \times 10^{1}$ \\
+Al &  Al & $2.109 \times 10^{-1}$ & $7.336 \times 10^{0}$ & $1.600 \times 10^{1}$ \\
+Al &  Al & $2.500 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Al &  Al & $2.982 \times 10^{-1}$ & $6.169 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Al &  Al & $3.900 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $1.600 \times 10^{1}$ \\
+Al &  Al & $4.466 \times 10^{-1}$ & $6.504 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Al &  Al & $4.770 \times 10^{-2}$ & $1.542 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Al &  Al & $5.830 \times 10^{-2}$ & $1.000 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Al &  Al & $6.900 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $1.200 \times 10^{1}$ \\
+Al &  Al & $7.100 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Al &  Al & $7.430 \times 10^{-2}$ & $0.000 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Al &  Al & $8.020 \times 10^{-2}$ & $1.189 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Al &  Cu & $1.117 \times 10^{-1}$ & $1.301 \times 10^{1}$ & $1.600 \times 10^{1}$ \\
+Al &  Cu & $1.166 \times 10^{-1}$ & $7.071 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Al &  Cu & $1.350 \times 10^{-1}$ & $9.170 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Al &  Cu & $1.689 \times 10^{-1}$ & $1.057 \times 10^{1}$ & $1.600 \times 10^{1}$ \\
+Al &  Cu & $2.109 \times 10^{-1}$ & $7.336 \times 10^{0}$ & $1.600 \times 10^{1}$ \\
+Al &  Cu & $2.500 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Al &  Cu & $2.982 \times 10^{-1}$ & $6.169 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Al &  Cu & $4.466 \times 10^{-1}$ & $6.504 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Al &  Cu & $4.770 \times 10^{-2}$ & $1.542 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Al &  Cu & $5.830 \times 10^{-2}$ & $1.000 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Al &  Cu & $6.900 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $1.200 \times 10^{1}$ \\
+Al &  Cu & $7.100 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Al &  Cu & $8.020 \times 10^{-2}$ & $1.189 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Al &  Cu & $9.510 \times 10^{-2}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Al & $1.000 \times 10^{-2}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Al & $1.073 \times 10^{-1}$ & $0.000 \times 10^{0}$ & $1.600 \times 10^{1}$ \\
+Cu &  Al & $1.117 \times 10^{-1}$ & $1.301 \times 10^{1}$ & $1.600 \times 10^{1}$ \\
+Cu &  Al & $1.166 \times 10^{-1}$ & $7.071 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Al & $1.350 \times 10^{-1}$ & $9.170 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Al & $1.689 \times 10^{-1}$ & $1.057 \times 10^{1}$ & $1.600 \times 10^{1}$ \\
+Cu &  Al & $2.109 \times 10^{-1}$ & $7.336 \times 10^{0}$ & $1.600 \times 10^{1}$ \\
+Cu &  Al & $2.500 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Al & $2.982 \times 10^{-1}$ & $6.169 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Cu &  Al & $3.900 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $1.600 \times 10^{1}$ \\
+Cu &  Al & $4.466 \times 10^{-1}$ & $6.504 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Cu &  Al & $4.770 \times 10^{-2}$ & $1.542 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Cu &  Al & $5.830 \times 10^{-2}$ & $1.000 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Cu &  Al & $6.900 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $1.200 \times 10^{1}$ \\
+Cu &  Al & $8.020 \times 10^{-2}$ & $1.189 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Cu &  Cu & $1.000 \times 10^{-2}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Cu & $1.117 \times 10^{-1}$ & $1.301 \times 10^{1}$ & $1.600 \times 10^{1}$ \\
+Cu &  Cu & $1.166 \times 10^{-1}$ & $7.071 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Cu & $1.350 \times 10^{-1}$ & $9.170 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Cu & $1.560 \times 10^{-2}$ & $0.000 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Cu &  Cu & $1.600 \times 10^{-1}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Cu & $1.689 \times 10^{-1}$ & $1.057 \times 10^{1}$ & $1.600 \times 10^{1}$ \\
+Cu &  Cu & $2.109 \times 10^{-1}$ & $7.336 \times 10^{0}$ & $1.600 \times 10^{1}$ \\
+Cu &  Cu & $2.500 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $2.000 \times 10^{1}$ \\
+Cu &  Cu & $2.982 \times 10^{-1}$ & $6.169 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Cu &  Cu & $3.900 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $1.600 \times 10^{1}$ \\
+Cu &  Cu & $4.466 \times 10^{-1}$ & $6.504 \times 10^{0}$ & $8.000 \times 10^{0}$ \\
+Cu &  Cu & $4.770 \times 10^{-2}$ & $1.542 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Cu &  Cu & $5.830 \times 10^{-2}$ & $1.000 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+Cu &  Cu & $6.900 \times 10^{-3}$ & $0.000 \times 10^{0}$ & $1.200 \times 10^{1}$ \\
+Cu &  Cu & $8.020 \times 10^{-2}$ & $1.189 \times 10^{1}$ & $2.000 \times 10^{1}$ \\
+\hline
+\end{longtable}
+\egroup
+
+\begin{table}[H]
+\caption{Hyperparameters for the angular symmetry functions.}
+\centering
+\vspace{1em}
+\bgroup
+\def\arraystretch{1.2}
+\begin{tabular}{cccccccc}
+\hline
+Element1 & Element2 & Element3 & $\eta$ & $\lambda$ & $\zeta$ & $r_c$\\
+\hline
+\hline
+Al &  Al &  Al & $3.900 \times 10^{-3}$ &  1 &  1.0 & $1.600 \times 10^{1}$ \\
+Al &  Al &  Cu & $3.900 \times 10^{-3}$ &  1 &  1.0 & $1.600 \times 10^{1}$ \\
+Cu &  Al &  Cu & $3.900 \times 10^{-3}$ &  1 &  1.0 & $1.600 \times 10^{1}$ \\
+\hline
+\end{tabular}
+\label{table:symfunc_angular_hypers}
+\egroup
+\end{table}
+
 \subsection{Equation of State of NNP} \label{sct:eos_data}
 
 \begin{figure}[H]%
@@ -641,8 +769,15 @@ Any new Al-Cu potentials now have a rich, carefully-calculated, and well-curated
 \end{figure}
 
 
-\subsection{Additional Solute Plots} \label{sct:adn_solsol}
-\subsection{}
+\subsection{Additional Solute Plots and Figures} \label{sct:adn_solsol}
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1\textwidth,center]{figures/ClusterPlot-Daniel-2020.04.15.png}%
+\caption{Three and four atom clusters considered in this study.}%
+\label{fig:atomview_clusters}
+\end{figure}
+
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1\textwidth,center]{./figures/solsol_in_cu.png}%
@@ -652,6 +787,7 @@ Any new Al-Cu potentials now have a rich, carefully-calculated, and well-curated
 
 
 
+\subsection{Additional Tables} \label{sct:adn_solsol}
 \begin{tabular}{l|lll|lll}%
 \hline%
 Structure&\multicolumn{3}{c}{FCC Al}&\multicolumn{3}{c}{FCC Cu}\\%
@@ -697,6 +833,9 @@ $C_{31}$ (GPa)&61.1&79.2&128.7&66.2&64.9&111.6&51.1&57.6&73.8\\%
 $C_{32}$ (GPa)&61.1&79.2&128.7&66.2&64.9&111.6&51.1&57.6&73.8\\%
 \hline%
 \end{tabular}%
+
+
+
 
 
 
