@@ -166,40 +166,63 @@ We carefully, systematically examined all the atomic-level properties that would
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Methodology}
-\subsection{Atomic Structures} \label{scn:atomic_structures}
-We wished to study and include as many atomic structures relevant to precipitation as possible.
-Here we briefly outline the structures we considered in this study, with further details in the relevant sections and the supplementary.  
-Firstly we needed a broad range of bulk Al-Cu compounds and made use of all those in the Open Quantum Materials Database \cite{Kirklin2015}, and we also added the $\theta$ and $\theta''$ for a total of 62 Al-Cu structures. 
-For each of these structures, we relaxed them, allowing both the cell shape and atomic positions to relax.
-After relaxation, we found elastic constants by applying strains of magnitude -0.01, -0.005, 0.005, 0.01 on
-each structure, for each $\epsilon_{1..6}$ strain (Voigt notation) for a maximum of 24 strained structures.
-We filtered out symmetrically equivalent strains, e.g., for FCC structures only $\epsilon_1$ and $\epsilon_4$
+\subsection{Atomic Structures} \label{sct:atomic_structures}
+
+We wished to provide as comprehensive a set of atomic structures to train the NNP as possible.
+In total the NNP was trained on 4857 structures from the following categories:
+\begin{itemize}
+    \item (111), (110) and (100) surfaces for pure Al and Cu [Section \ref{sct:bulk_properties}]
+    \item Stable and Unstable stacking faults for pure Al and Cu [Section \ref{sct:bulk_properties}]
+    \item All Al-Cu from the Open Quantum Material Database\cite{Kirklin2015}. $theta$ and $theta''$ were also added  [Section \ref{sct:bulk_properties}]
+    \item Additional Al, Cu, $theta$, $theta'$ and $theta''$ structures at high pressures [Section \ref{sct:bulk_properties} and \ref{sct:eos_data}]
+    \item Binary solute-solutes and solute-vacancies in Al and Cu matrix  [Section \ref{sct:solute_results} and \ref{sct:adn_solsol}]
+    \item Solute-stacking fault interaction energies in Al and Cu matrix  [Section \ref{sct:solute_results}]
+    \item 32 atom FCC supercells with random concentrations of Al, Cu and Vacancies. 
+    \item Coherent and semicoherent interfaces for $\theta''$  and $\theta'$ [Section \ref{sct:interfaces}]
+    \item GSF (0$\overline{1}$1) surface for $\theta$ [Section \ref{sct:gsf_results}]
+    \item Supercells of all OQMD structures with small displacements suitable for phonon calculations,
+          indirectly tested by evaluating the $\theta' \rightarrow \theta$ transition temperature in
+          [Section \ref{sct:thetap_theta_transition}]
+\end{itemize}
+
+Surfaces and stacking faults in pure Al and Cu were generated using the Atomic Simulation Environment (ASE) software package.
+The Open Quantum Materials Database (OQMD)\cite{Kirklin2015} was used to provide a rich source of Al-Cu structures.
+In total we fully relaxed the cell shape and atomic positions 62 OQMD structures (if including $\theta$ and $\theta''$ phases) using the methodology described in \ref{sct:dft_calcsettings_and_methods}.
+Of these, 45 maintained the same symmetry group before and after relaxation and were considered to be 'stable' (many structures in the OQMD relaxed into the same structure, e.g., pure Al and Cu structures would often relax into the FCC phase).
+For each of the stable structures, further training structures were added by applying strains of magnitudes \mintinline{python}{-0.01, -0.005, 0.005, 0.01} in each of the $\epsilon_{1..6}$ strain directions (Voigt notation) for a maximum of 24 possible strained structures.
+Many of these strains would be redundant, so we used Pymatgen\cite{Ong2013} to ensure only unique strains were applied, e.g., for FCC structures only $\epsilon_1$ and $\epsilon_4$
 strains were applied.
-Pymategen\cite{Ong2013} was used to determine and apply unique strains. 
-Structures which maintained the same symmetry group before and after relaxation were considered to be 'stable,'
-we found 45 Al-Cu structures maintained their symmetry group during relaxation. 
-This procedure to compute the elastic constants is similar to previous work by DeJong et al. \cite{DeJong2015}.
+
+Binary solutes and vacancies: Cu-Cu, Cu-Vac, Vac-Vac, were trained up to 7 nearest neighbors in a 256 supercell for Al matrix. 
+In Cu matrix, Al-Al, Al-Vac, and Vac-Vac binaries were trained on the first 4 nearest neighbors in a 108 atom supercell. 
+We also looked at a large number of 32 atom FCC supercells spanning all concentrations ratios of Al/Cu in units of 5\%  with random atomic distortions to broaden the configuration space sampled.
+In Section \ref{sct:solute_results}, we go over additional solute structures not included in training but were examined for verification.
+
+We included structures for four interfaces: semicoherent $\theta''$, coherent $\theta''$,
+semicoherent $\theta'$ and coherent $\theta'$. The $\theta$ phase does not have a coherent interface\cite{Nie2014PhysicalAlloys} with Al-bulk, so we did not examine it. 
+
+We added structures for the (0$\overline{1}$1) GSF surface in $\theta$ phase, as it is known to be of
+great importance for laser-sintered laminated structures\cite{Wang2018}. 
+
 To ensure the NNP had structures relevant for modeling important properties involving phonons, e.g., the $\theta'$ $\rightarrow$ $\theta$ transition, we added atomically-distorted structures using Phonopy\cite{Togo2015FirstScience}.
 We took as input 45 structurally-stable OQMD structures, i.e., the symmetry group was unchanged after DFT relaxation.
 Then, we generated supercells to ensure a minimum of 108 atoms in each cell, while trying to create as cubic a supercell structure as possible.
 Finally, Phononpy was used to find the minimum set of displacements, such as possible as to generate the dynamical matrix.
 E.g., in this work, we created three 144 atom supercells for the $\theta$ phase, each with a small atomic displacement on a single atom.  
 
-Binary solutes and vacancies: Cu-Cu, Cu-Vac, Vac-Vac, were trained up to 7 nearest neighbors in a 256 supercell for Al matrix. 
-In Cu matrix, Al-Al, Al-Vac, and Vac-Vac binaries were trained on the first 4 nearest neighbors in a 108 atom supercell. 
-We also looked at a large number of 32 atom FCC supercells spanning all concentrations ratios of Al/Cu in units of 5\%  with random atomic distortions to broaden the configuration space sampled.
-In Section \ref{sct:solute_results}, we go over additional solute structures not included in training but were examined for verification.
-Similarly, in Section \ref{sct:antsite_results}, we consider antisites and vacancies for all stable OQMD structures, but these are not included in the training set.
 
-We wished to provide a comprehensive set of mechanically relevant interfaces as possible. 
-To that end, we included structures for four interfaces: semicoherent $\theta''$, coherent $\theta''$,
-semicoherent $\theta'$ and coherent $\theta'$. The $\theta$ phase does not have a coherent interface\cite{Nie2014PhysicalAlloys} with Al-bulk, so we did not examine it explicitly. 
-We added structures most relevant for bulk fracture: (111) (110) and (100) in pure Al and pure Cu as well as
-the stable and unstable stacking fault structures for these elements.
-We added structures for the (0$\overline{1}$1) GSF surface in $\theta$ phase, as it is known to be of
-great importance for laser-sintered laminated structures\cite{Wang2018} though as will be discussed in Section \ref{sct:gsf_results}, the NNP performs well for GSF surfaces even without training. 
 
-\subsection{NNP selection and Evaluation of Errors}
+To validate the NNP we used the following structures that were not included in the training set:
+\begin{itemize}
+    \item GSF for the (111) plane of $\theta''$  [\textcolor{red}{section}]
+    \item Cu clusters of 3 and 4 atoms in Al matrix [\textcolor{red}{section}] 
+    \item \textcolor{red}{Additional Abhinav stuff} [\textcolor{red}{section}] 
+    \item Antisite and Vacancy energies for all OQMD structures [Section \ref{sct:antsite_results}]
+    \item \textcolor{red}{Eleanor fracture results?} 
+    \item \textcolor{red}{Yi dislocation results?} 
+\end{itemize}
+
+\subsection{NNP selection and Evaluation of Errors} \label{sct:nnp_select_and_eval}
 In this work, we generated NNPs using the methodology developed by Behler and Parrinello\cite{Behler2007}.
 Here we only sketch out the essential basics of NNPs and refer the reader to the excellent tutorial review of Behler for further details \cite{Behler2015}. 
 
@@ -255,7 +278,7 @@ All error bars center on the average of all trained NNPs and extends their stand
 Thus, the representative NNP, i.e., the NNP with the closest $C_{44}$ to DFT, is not always close to the error bar center, nor does it always lie within the error bars. 
 
 
-\subsection{DFT Training Set Generation}
+\subsection{DFT Calculation Settings and Methodology} \label{sct:dft_calcsettings_and_methods}
 We computed all calculations using GGA-PBE\cite{Perdew1996} with Quantum Espresso\cite{Giannozzi2009} (QE) with a
 544eV (40Ry) energy cutoff 
 using a 80 kpoints/$\AA^-1$ Monkhorst-Pack grid\cite{Pack1977SpecialIntegrations},
@@ -265,7 +288,7 @@ All pseudopotentials were chosen using the efficiency collection of the solid-st
 was found to have better accuracy and reduced computational cost.
 
 We used AiiDA\cite{Pizzi2016, Huber2020AiiDAProvenance} to manage the large number of DFT computations needed for this study, as well as to ensure the calculations used very consistent settings, as is essential for ML potentials\cite{Dragoni2018AchievingIron}.
-A schematic of how we used AiiDA can be seen in Figure \ref{fig:aiida_methods} with a description of key terms in the figure below:
+A schematic of how we used AiiDA can be seen in Figure \ref{fig:aiida_methods} with a description of key terms in the list below:
 \begin{itemize}
     \item \mintinline{python}{Structure Group}  A group of structures stored in the AiiDA database
     \item \mintinline{python}{parameters}  A set of parameters stored in the AiiDA database. These are the settings, e.g., energy cutoff, smearing, to be applied to each calculation
@@ -280,11 +303,10 @@ A schematic of how we used AiiDA can be seen in Figure \ref{fig:aiida_methods} w
                                           in this work QE, to submit, launch, run, collect and parse on a HPC 
                                           cluster. In this work all \mintinline{python}{CalcJobs} are created and
                                           managed by a parent \mintinline{python}{WorkChain}.
-    
 \end{itemize}
 
-We used AiiDA to managed our DFT calculations in the following manner.
-Firstly, we generated a set of scripts to create structures, at least one script for each of the categories mentioned in Section \ref{scn:atomic_structures}.
+Here we further detail our usage of AiiDA.
+Firstly, we generated a set of scripts to create structures, at least one script for each of the categories mentioned in Section \ref{sct:atomic_structures}.
 These structures were stored in separate AiiDA \mintinline{python}{Structure Groups}.
 In some cases, e.g., for importing the OQMD structures or generating phonon-displaced structures, we used an external script to create structures, which we then uploaded into AiiDA.
 We then used a wrapper script that allowed us to apply a consistent set of parameters, kpoint spacing, and pseudopotentials to generate an AiiDA \mintinline{python}{WorkChain} for each structure in the \mintinline{python}{Structure Group}.
@@ -310,7 +332,7 @@ We provide all codes and all computed data will be uploaded on the web via Mater
 
 \section{Results and Discussion}
 
-\subsection{Test and Training Errors}
+\subsection{Test and Training Errors} \label{sct:test_and_train_errors}
 
 As mentioned in the methodology, we trained 50 NNPs, with 90\% of the structures set for training and 10\% set for testing.
 Figure \ref{fig:rsme_plot} shows the errors in both the testing and training samples for a single NNP.
@@ -323,6 +345,7 @@ However, this large error is primarily due to a single outlier, as can be seen i
 Removing this massive outlier lowers the testing error from 26.5 meV/atom to 3.46 meV/atom.
 The outlier structure in question is for Al under massive compression, $a_0$ = 3.27$\AA$.
 For our purposes, the mechanical properties of Aluminum alloys, we can consider this being beyond the compression range we would be interested in for almost all applications.
+We can further confirm that test and training errors follow the same general distrubtion by examining the histogram of errors shown in Supplementary \ref{sct:rsme_histogram}. 
 In general, the NNP breaks down at compressions beyond $\frac{a}{a_0} ~= 0.8$, as can be seen in by the plots in section \ref{sct:eos_data} in the supplementary material. 
 
 \begin{figure}[H]%
@@ -333,7 +356,7 @@ Note the large test error outlier, an order of magnitude larger than the next-gr
 \label{fig:rsme_plot}
 \end{figure}
 
-\subsection{Bulk Properties}
+\subsection{Bulk Properties} \label{sct:bulk_properties}
 
 Figure \ref{fig:matparam_purestats} shows the performance of NNP and ADP against DFT on fundamental properties: lattice and elastic constants, surface and stacking fault energies, for pure Al and Cu.
 For most of these properties, NNP shows little or no advantage relative to ADP, the sole exception being stable stacking fault energies in aluminum.
@@ -355,7 +378,7 @@ The NNP outperforms ADP for formation energy, atomic volume, and elastic constan
 We compute structure formation energy $\Delta E^{structure}_f$ of all structures,
 , as relative to bulk FCC Al and dilute Cu in matrix:
 \begin{equation} \label{eqn:formE_structure}
-\Delta E^{structure}_f = E^{structure}_N - nE^{ref}_Al-(N-n)E^{ref}_{Cu}
+\Delta E^{structure}_f = E^{structure}_N - nE^{ref}_{Al}-(N-n)E^{ref}_{Cu}
 \end{equation}
 \begin{equation} \label{eqn:formRef_Al}
 E^{ref}_{Al} = E^{FCC}_{Al}
@@ -464,7 +487,7 @@ Solute-Stacking fault structures are.}
 \label{table:solute_special}
 \end{table}
 
-\subsection{Interfaces}
+\subsection{Interfaces} \label{sct:interfaces}
 In this work, the coherent and semicoherent versions of the $\theta''$ and $\theta'$ interfaces were studied while $\theta$ was omitted since it only forms incoherent interfaces \cite{Nie2014PhysicalAlloys}.
 We constructed these interfaces by taking their OQMD entries and stacking them on the Al matrix using the ASE \mintinline{python}{ase.build.stack} command.
 During relaxation, atoms are free to move, but the cell is held fixed. 
@@ -589,7 +612,7 @@ These structures were not included in the training set.}%
 \label{fig:antisite_plot}
 \end{figure}
 
-\textcolor{red}{\subsection{Albert Section}}
+\textcolor{red}{\subsection{Albert Section}} \label{sct:thetap_theta_transition}
 
 \section{Conclusion}
 In this work, we have developed an NNP, comprehensively compared it to the most currently-used interatomic potential, ADP, and found ours to be a significant step forward in the state-of-the-art.
@@ -713,6 +736,14 @@ Cu &  Al &  Cu & $3.900 \times 10^{-3}$ &  1 &  1.0 & $1.600 \times 10^{1}$ \\
 \label{table:symfunc_angular_hypers}
 \egroup
 \end{table}
+
+\subsection{Histogram of Errors} \label{sct:rsme_histogram}
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=0.7\textwidth,center]{figures/plot_nnperrors_histogram.png}%
+\caption{Histogram of errors for both training and testing}%
+\end{figure}
 
 \subsection{Equation of State of NNP} \label{sct:eos_data}
 
