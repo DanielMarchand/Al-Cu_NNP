@@ -115,12 +115,12 @@ or
 To minimize issues with ML potentials, curation of the training dataset is essential.
 Ideally, an exhaustive dataset of possible atomic environments with their energies and forces from electronic structure calculations is needed to ensure transferability.
 Generating the training dataset starts with defining the physical properties that the potential should reproduce and the associated atomic configurations. Representative atomic environments are then selected for the actual training dataset (see Fe~\cite{Dragoni2018AchievingIron} and W~\cite{Szlachta2014AccuracyTungsten} within the GAP framework, for instance).
-Protocols to circumvent the tedious task of curating an exhaustive training data set have been developed.  \textit{Active learning} methods have used random perturbations of bulk crystalline structures to sample Al-Mg alloy space~\cite{Zhang2019ActiveSimulation}.  \textit{Self-guided learning} has explored the phase space by using randomized unit cells paired with a selection of the most diverse structures and applied to C, Si and Ti \textcolor{red}{REF?}.
+Protocols to circumvent the tedious task of curating an exhaustive training data set have been developed.  \textit{Active learning} methods have used random perturbations of bulk crystalline structures to sample Al-Mg alloy space~\cite{Zhang2019ActiveSimulation}.  \textit{Self-guided learning} has explored the phase space by using randomized unit cells paired with a selection of the most diverse structures and applied to C, Si and Ti \cite{Bernstein2019DeSurfaces}.
 \textit{On-the-fly learning} method has combined DFT calculations with ML to evaluate melting points for Al, Si, Ge, Sn and MgO~\cite{Jinnouchi2019On-the-flyPointsb}.
 This approach circumvents expensive DFT calculations of $99\,$\% of structures because only structures with an estimated error larger than a defined bound are recalculated via DFT and then added to improve the ML force field.  A different hybrid approach, called the Physically-informed neural network (PINN) method, combines an analytical bond order potential (BOP) with a neural network that adjusts the BOP parametrization as a function of the specific environment~\cite{PurjaPun0PhysicallyMaterials}.  The result is a potential that retains some physical bounds when extrapolated to new atomic environments.
 In this approach, the training data plays a slightly lesser role because some basic physics is already encoded into the functional form.
 
-A limiting aspect of nearly all of the ML potentials generated to date is that the training data, and fitness of the potential, are mainly demonstrated on fundamental properties of the bulk crystalline material.  Few, if any, maerial defects are considered.
+A limiting aspect of nearly all of the ML potentials generated to date is that the training data, and fitness of the potential, are mainly demonstrated on fundamental properties of the bulk crystalline material.  Few, if any, material defects are considered.
 Structures in the training set are associated with the equilibrium geometry, elastic response of the bulk, vibrational properties, vacancies, surfaces, and, in some cases, liquid-state information.
 These features are absolutely necessary but far from sufficient for performing metallurgically-useful studies of the behavior of defects in metals.
 
@@ -454,7 +454,7 @@ The GSF energy surface (GSFE) determines the stable faults for the dissociation 
 
 The GSFE is computed using the methods detailed in \cite{Yin2017a}, which we briefly summarize here.
 The smallest periodic cell vectors a1 and a2 for the desired slip surface are first identified, and a supercell created with a3 normal to the a1-a2 plane.  The undeformed cell energy $E_{pristine}$ was computed.
-For each fault vector $\vec{t}$ of the GSF, the periodic cell shape was then deformed by shifting a3 by $\vec{t}$.  All atoms and the a3 cell vector were then allowed to relax in the 3-direction to compute the energy $E^{GSF}_{\vec{R}}$.
+For each vector $\vec{t}$ of the GSF, the periodic cell shape was then deformed by shifting a3 by $\vec{t}$.  All atoms and the a3 cell vector were then allowed to relax in the 3-direction to compute the energy $E^{GSF}_{\vec{R}}$.
 The GSF energy at a displacement $\gamma_{GSF\vec{t}}$ was then calculated as 
 \begin{equation}
 \gamma^{GSF}_{\vec{t}} = (E^{GSF}_{\vec{t}} - E^{pristine})/A
@@ -488,7 +488,13 @@ In contrast, at the extremal points, the ADP deviates significantly from the DFT
 In any applications of potentials to plasticity and fracture, it is essential to demonstrate that the potential reproduces a reasonable structure for the relevant dislocation(s) and exhibits physically-expected behavior at sharp crack tips.  There are no precise first-principles results for comparisons, but DFT results using other settings and novel simulations methods provide a reference for determining whether the potential is reasonable.  An ML potential can also be compared to other traditional potentials where the behavior has previously been found reasonable.
 
 With that background, we examined the predictions of the NNP11 potential for the structure and energetics of (111) edge and screw dislocations.
-The methodology is standard, and described in \cite{Hu2020AtomisticDynamics}.  An edge or screw dislocation is placed at the center of a cylindrical cell of radius 31.48 ($\AA$).  All atoms in the cell are deformed according to the anisotropic displacement field of a Volterra dislocation computed using the Stroh formalism\cite{Stroh1958DislocationsElasticity}.  Atoms within 22$\AA$ of the outer boundary are then fixed at these initial positions, and all interior atoms relaxed to a minimum energy condition.  The core structure of the edge ?? SCREW?? dislocation for NNP11 is shown in Figure XXX along with the DFT-computed structure from \cite{Woodward2008PredictionTheory}.  The NNP11 dislocation dissociates into two partial dislocations, as expected.  The dissociation distance between the two partials differs slightly from the DFT reference, recalling that the NNP11 has a higher $C_{44}$ then usually obtained in DFT and that this DFT structure is obtained by very different methodology and DFT parameters.
+The methodology is standard, and described in \cite{Hu2020AtomisticDynamics}.
+An edge or screw dislocation is placed at the center of a cylindrical cell of radius 31.48 ($\AA$).
+All atoms in the cell are deformed according to the anisotropic displacement field of a Volterra dislocation computed using the Stroh formalism\cite{Stroh1958DislocationsElasticity}.
+Atoms within 22$\AA$ of the outer boundary are then fixed at these initial positions, and all interior atoms relaxed to a minimum energy condition.
+The core structure for both edge and screw dislocations for NNP11 is shown in Appendix \ref{apd_sct:fracturedislocation_images} Figure \ref{fig:dislocation_NNPvsDFT} along with the DFT-computed structure from \cite{Woodward2008PredictionTheory}.
+The NNP11 dislocation dissociates into two partial dislocations, as expected.
+The dissociation distance between the two partials differs slightly from the DFT reference, recalling that the NNP11 has a higher $C_{44}$ then usually obtained in DFT and that this DFT structure is obtained by very different methodology and DFT parameters.
 
 As a quantitative measure, we then compute the line tension energy $\Gamma^{core}$ energy via:
 \begin{equation}
@@ -496,8 +502,9 @@ As a quantitative measure, we then compute the line tension energy $\Gamma^{core
 \end{equation}
 Where $E^{core}$ is the energy of the dislocation core and $\theta_{angle}$ is the character angle. 
 Full numerical details are beyond the scope of this paper and we again refer the reader to \cite{Hu2020AtomisticDynamics} for further information.
-We compute $E^{core}$ to be 1.144 (eV/nm) for the edge dislocation and 1.055 (eV/nm) for the screw dislocation.
-\textcolor{red}{These values are fairly close to the Mishin screw REF? and a bit higher than the Ercollessi-Adams REF? and have less variability from edge to screw}
+We compute $E^{core}$ to be 1.144 (eV/nm) for the edge dislocation and 1.055 (eV/nm) for the screw dislocation. 
+The values are fairly close to those computed using the Ercolessi-Adams\cite{Ercolesi1994InteratomicMethod}/Mishin\cite{Mishin1999InteratomicCalculations} potentials, which returned 0.463/1.198 (eV/nm) respectively for an edge dislocation and 0.810/1.262 (eV/nm) for screw\cite{Hu2020AtomisticDynamics}. 
+Thus the NNP returns values that are somewhat higher than the of Ercollessi-Adams and quite close to those of the Mishin potential. 
 
 Our experience with both ML and traditional potentials has indicated that they can struggle to correctly capture behavior at the tipe of a sharp crack. 
 So, we examine the most basic fracture test for FCC metals: the intrinsic ductility associated with dislocation emission from a sharp crack tip.
@@ -509,27 +516,35 @@ K_{Ie} =
  \sqrt{(0.5\gamma^{USF}+0.145\gamma^{111})o(\theta^{slip},\phi^{Burgers})}/F_{12}(\theta) & \gamma^{111} > 3.45\gamma^{USF}
 \end{cases}
 \end{equation}
-Where $\gamma^{USF}$ is the unstable stacking fault energy, $\gamma^{111}$  is the surface energy of the emission plane, $o(\theta^{slip},\phi^{Burgers})$ is an anisotropic elasticity term dependent on the inclination of the slip plane and Burgers vector, and $F_{12}(\theta^{slip})$ provides the resolved slip on the slip plane oriented at an angle with respect to the crack plane (see Andric \& Curtin\cite{Andric2019AtomisticFracture}).  For the DFT-computed values of the various material quantities, the first equation above applies and the critical value is predicted to be $K_{Ie}=XXXX$.  A multiscale DFT simulation using the same crack orientation but different DFT parameters (NAIR-WARNER-HENNIG PAPER - HERE ARE THE NUMBERS: $G_USF = 0.0095 eV/A^2$ was shown to emit a dislocation at $K_{Ie}=0.230 eV/A^{2.5}$  NEED TO CONVERT UNITS.... - FACTOR OF 1.6 FOR $MPA-M^1/2$ I THINK, SO $0.368 MPA-M^1/2$) provides a value for rough comparison.
+Where $\gamma^{USF}$ is the unstable stacking fault energy, $\gamma^{111}$  is the surface energy of the emission plane, $o(\theta^{slip},\phi^{Burgers})$ is an anisotropic elasticity term dependent on the inclination of the slip plane and Burgers vector, and $F_{12}(\theta^{slip})$ provides the resolved slip on the slip plane oriented at an angle with respect to the crack plane (see Andric \& Curtin\cite{Andric2019AtomisticFracture}).  For the DFT-computed values of the various material quantities, the first equation above applies and the critical value is predicted to be $K_{Ie}=XXXX$.  A multiscale DFT simulation using the same crack orientation but different DFT parameters\cite{Nair2011} was shown to emit a dislocation at $K_{Ie}$=0.368 (MPa$\sqrt{\text{m}}$) provides a value for comparison.
 
 We simulate the crack tip behavior following the K-test methodology carefully described by Andric \& Curtin \cite{Andric2019AtomisticFracture}.  We use a simulation cell of size 200*200*10 $\AA^3$, insert a crack terminating along the $z$ direction in the center of the cell, hold boundary atoms fixed at the anistropic elastic predictions for the desired applied stress intensity factor, and allow all interior atoms to relax using the conjugate-gradient method followed by steepest descent with force tolerance 1$e$-05 ev/A.  Successive increments in load level are applied until any notable event occurs at the crack tip.
-Across all 40 NNPs, all show partial dislocation emission and no gross artifacts at the crack tip; a typical example is shown in Figure XXXX, which is qualitatively similar to results found with many traditional potentials.  The emission event occurred at a critical load of $K_{Ie}=0.354+/-0.007$, in excellent agreement with the predicted value and with the value found in the direct multiscale DFT simulation.  Among the 40 potentials, 13 showed emission of only the leading partial (Figure \ref{fig:fracturedislocation_images}) while 27 showed the emission of a second twinning partial following the leading partial with no increase in the applied load.  Theory and other simulations show that the second emission event should be the twinning partial occurring just behind the first partial.  The load for this emission depends on several additional factors and is very close to $K_{Ie}$ when using the Mishin Al potential [REF PREDRAG TWIN PAPER AND MISHIN AL PAPER].   Overall, we conclude that all the NNPs for Al provide a very good representation of the crack tip and the first partial emission process.
+Across all 40 NNPs, all show partial dislocation emission and no gross artifacts at the crack tip; a typical example is shown in Figure \ref{fig:fracturedislocation_images}, which is qualitatively similar to results found with many traditional potentials.  The emission event occurred at a critical load of $K_{Ie}=0.354+/-0.007$ (MPa$\sqrt{\text{m}}$), in excellent agreement with the predicted value and with the value found in the direct multiscale DFT simulation.  Among the 40 potentials, 13 showed emission of only the leading partial (Figure \ref{fig:fracturedislocation_images} (a)) while 27 showed the emission of a second twinning partial (Figure \ref{fig:fracturedislocation_images} (b) following the leading partial with no increase in the applied load.  Theory and other simulations show that the second emission event should be the twinning partial occurring just behind the first partial.  The load for this emission depends on several additional factors and is very close to $K_{Ie}=0.30$ (MPa$\sqrt{\text{m}}$) when using the Mishin Al potential, and $K_{Ie}=0.34$ (MPa$\sqrt{\text{m}}$) with the Ercolessi-Adams potential \cite{Mishin1999InteratomicCalculations, Ercolesi1994InteratomicMethod, Andric2017NewEmission}.   Overall, we conclude that all the NNPs for Al provide a very good representation of the crack tip and the first partial emission process.
 
 
 \subsection{Solute Clusters and Kinetic Monte Carlo (KMC)} \label{sct:solute_clusters_KMC}
 
-In early-stage precipitation, pre-precipitates are nucleating by formation of small multi-atom clusters.  An understanding of the nucleation and early-stage growth thus requires that a potential properly represent not only many possible precipitate phases and precipitate/matrix interfaces but also possible clusters that cannot be classified as precipitates.   The pair interactions have already been discussed, and so here we focus on 3 and 4 atom clusters of Cu.  We consider clusters recently studied by \cite{Gorbatov2019EffectiveAlloys} et al. as illustrated in Figure \ref{fig:atomview_clusters} and denoted using the same notation as Gorbatov et al. TABLE HAS A DIFFERENT NOTATION...ONLY THREE NUMBERS.... Among these clusters, we note that the 111 and 111111 (compact triangle and tetrahedron of nearest neighbor Cu atoms, respectively) are not compatible with the formation of GP-I and GP-II zones on the (100) planes that occur in real Al-Cu while the 112, 111112 and 111122 clusters are consistent.
+In early-stage precipitation, pre-precipitates are nucleating by formation of small multi-atom clusters.  An understanding of the nucleation and early-stage growth thus requires that a potential properly represent not only many possible precipitate phases and precipitate/matrix interfaces but also possible clusters that cannot be classified as precipitates.   The pair interactions have already been discussed, and so here we focus on 3 and 4 atom clusters of Cu.  We consider clusters recently studied by \cite{Gorbatov2019EffectiveAlloys} et al. as illustrated in Figure \ref{fig:atomview_clusters} and denoted using the same notation as Gorbatov et al. Among these clusters, we note that the 111 and 111111 (compact triangle and tetrahedron of nearest neighbor Cu atoms, respectively) are not compatible with the formation of GP-I and GP-II zones on the (100) planes that occur in real Al-Cu while the 112, 111112 and 111122 clusters are consistent.
 
 We compute the cluster formation energy $\Delta E^{cluster}_{f,(N-X,X)}$ as the energy of the embedded cluster relative to the energy of Cu in solid solution,
 \begin{equation}
 \Delta E^{cluster}_{f,(N-X,X)} = E^{cluster}_{N-X,X} - \sum_i E^{ref}_i
 \end{equation}
-The DFT values for all the clusters as computed in simulation cells of XXX atoms are shown in Table XXXX along with the NNP and ADP values.  The DFT values predict that the clusters favoring the (100) plane are energetically preferable as compared to the other clusters and with the 111111 cluster even having positive formation energy.  NNP13 is in reasonable agreement with DFT for most of the clusters, but notably predicts an incorrect strongly negative formation energy for the 111111 cluster and also overpredicts the stability of the 111 cluster.  Across the mean and standard deviation of the 40 NNPs, the deviations seen for NNP13 are not evident.  The ADP potential shows gross errors, predicting all clusters to be very energetically favorable and predicting the relative stability of the 3-atom clusters incorrectly (as does NNP13 but with a much smaller difference).  Application of ADP to the study of early-stage clustering is thus expected to be very inaccurate while the performance of the NNPs may vary.  We will investigate this next.
+The DFT values for all the clusters as computed in simulation cells of 256 atoms are shown in Table \ref{table:solute_cluster} along with the NNP and ADP values.  The DFT values predict that the clusters favoring the (100) plane are energetically preferable as compared to the other clusters and with the 111111 cluster even having positive formation energy.  NNP13 is in reasonable agreement with DFT for most of the clusters, but notably predicts an incorrect strongly negative formation energy for the 111111 cluster and also overpredicts the stability of the 111 cluster.  Across the mean and standard deviation of the 40 NNPs, the deviations seen for NNP13 are not evident.  The ADP potential shows gross errors, predicting all clusters to be very energetically favorable and predicting the relative stability of the 3-atom clusters incorrectly (as does NNP13 but with a much smaller difference).  Application of ADP to the study of early-stage clustering is thus expected to be very inaccurate while the performance of the NNPs may vary.  We will investigate this next.
 
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1\textwidth,center]{figures/ClusterPlot-Daniel-2020.04.15.png}%
+\caption{Three and four atom clusters considered in this study. 
+Clusters are described using the the length of edges of the cluster, e.g., 111 represents three edges all nearest neighbors. Note that there are three edges for a three atom cluster but six edges for a four atom cluster.}%
+\label{fig:atomview_clusters}
+\end{figure}
 
 \begin{table}[H]
 \begin{tabular}{l|cccc}%
 \hline%
-&DFT&ADP&NNP& NNP-\emph{Avg / StdDev}\\%
+&DFT&ADP&NNP13& NNP-\emph{Avg / StdDev}\\%
 \hline%
 $E^{3Cu}_{111}$ (eV)&-0.073&{-}0.718&{-}0.112&\emph{-0.060 / 0.037}\\%
 $E^{3Cu}_{112}$ (eV)&-0.112&{-}0.595&{-}0.097&\emph{-0.085 / 0.025}\\%
@@ -597,19 +612,18 @@ Across the family of NNPs, however, a number of NNPs capture the energetics of t
 \subsection{Antisites and Vacancies} \label{sct:antsite_results}
 
 In modeling the evolution of precipitate microstructures, it is unavoidable that there will be anti-site defects and vacancies inside the precipitates.  These configurations also serve as further tests of the ability of the NNPs to broadly capture the energetics of the entire Al-Cu system.
-For this reason, we compute the antisite and vacancy formation energies for every OQMD structure that was predicted to be stable using the NNPs (see Figure XXX) I THINK I LOST SOMETHING HERE - YOU MEAN THE STRUCTURE IS THE SAME AFTER YOU PUT IN THE ANTISITE?  BUT YOU ARE NOT RELAXING ANYTHING. SO WHY ARE THERE MORE CASES MISSING HERE FOR THE ANTISITES THAN FOR THE VARIOUS STRUCTURES?  THERE ARE ALSO MULTIPLE SITES IN EACH STRUCTURE, IN SOME CASES, SO WHICH DID YOU CHOOSE?  SEEMS TO BE ON NUMBER FOR EACH PRECIPITATE...
+For this reason, we compute the antisite and vacancy formation energies for every OQMD structure that was predicted to be stable using the NNPs (see Figure \ref{fig:matparam_stats1}). 
 Unique atomic sites in each structure were identified using pymatgen.
 The primitive unit cell was then used to generate larger cells with a minimum of 108 atoms to minimize defect-defect interactions.
 For each of the unique sites identified, a different atom was substituted, e.g. Al $\rightarrow$ Cu or Cu $\rightarrow$ Al, or the atom was removed to create a vacancy.  The unrelaxed formation energies $\Delta E^{antisite}_f$ of all the antisite structures were then calculated relative to the solid solution alloy as
 \begin{equation}
-\Delta E^{antisite}_f = E^{antisite} - E^{pristine} - \sum\Delta n_i E^{ref}_i
+\Delta E^{antisite}_f = E^{antisite} - E^{pristine} - E^{ref}_{new} + E^{ref}_{old}
 \end{equation}
-NEEDS TO BE MORE CLEAR, RIGHT? YOU SWAP AN ATOM I FOR AN ATOM J. SO JUST WRITE $E_REF(I)-E_REF(J)$ AND NOTE THAT THE POSITION OF THE ANTISITE IS NOT INDICATED?
-where $E^{antisite}$ and $E^{pristine}$ are the total energies of the precipitates with and without the antisite defect, and ISNT IT JUST ONE ATOM ALL THE TIME?  $n_i$ is the
-number and sign of the swapped atoms, and $E^{ref}_i$ is the reference energy for compound $i$, as stated in 
+where $E^{antisite}$ and $E^{pristine}$ are the total energies of the precipitates with and without the antisite defect and $E^{ref}_{new}$, $E^{ref}_{old}$,  are the reference energies for the new and old element respectively, as stated in 
 equations \ref{eqn:formRef_Al} and \ref{eqn:formRef_Cu}.
 
 Figure \ref{fig:antisite_plot} shows the antisite results.
+Note that, for clarity of visualization, when there are multiple antisites for a given element and structure, we only display the one with the lowest DFT energy of formation.
 Error bars rarely exceed 0.1eV and are almost always centered around the correct DFT value.
 ADP also performs reasonably but has substantially more errors, with many samples deviating more than 1eV from DFT.
 These results demonstrate that NNPs make accurate predictions of defects that are not in their training set. 
@@ -838,56 +852,21 @@ Cu &  Al &  Cu & $3.900 \times 10^{-3}$ &  1 &  1.0 & $1.600 \times 10^{1}$ \\
 
 \begin{figure}[H]%
 \centering%
-\includegraphics[width=1\textwidth,center]{figures/ClusterPlot-Daniel-2020.04.15.png}%
-\caption{Three and four atom clusters considered in this study.}%
-\label{fig:atomview_clusters}
-\end{figure}
-
-\begin{figure}[H]%
-\centering%
 \includegraphics[width=1\textwidth,center]{./figures/solsol_in_cu.png}%
 \caption{Neighbor index vs. binding energy $E_{bind}$ for Al-Al, Al-Vac and Vac-Vac in Cu matrix.}%
 \label{fig:solsol_in_cu}
 \end{figure}
 
 
-\subsection{Dislocation Emission In Fracture} \label{apd_sct:fracturedislocation_images}
-\begin{figure}[H]%
-\centering%
-\subfloat[]{{
- \includegraphics[width=0.5\textwidth]{dislocationFigures/AlCu_11_edge_50b_cna.png}
- }}%
-\subfloat[]{{
- \includegraphics[width=0.5\textwidth]{dislocationFigures/AlCu_11_edge_50b_dissociation_ux.png}
- }}%
-\\
-\subfloat[]{{
- \includegraphics[width=0.5\textwidth]{dislocationFigures/AlCu_11_edge_50b_dissociation_uy.png}
- }}%
-\subfloat[]{{
- \includegraphics[width=0.5\textwidth]{dislocationFigures/AlCu_11_edge_50b_dissociation_uz.png}
- }}%
-\caption{Atomic views of an edge dislocation in FCC Aluminum using an NNP. (a) CNA analysis (green=FCC, red=HCP, blue=BCC, white=Unidentified), (c-d) displacements in the x=[-1,1,0], y=[1,1,1], and z=[1,1,-2] directions. }
-\label{fig:edgedislocation_views}
-\end{figure}
+\subsection{Dislocations and Fracture} \label{apd_sct:fracturedislocation_images}
 
 \begin{figure}[H]%
 \centering%
-\subfloat[]{{
- \includegraphics[width=0.5\textwidth]{dislocationFigures/AlCu_11_screw_50b_cna.png}
- }}%
-\subfloat[]{{
- \includegraphics[width=0.5\textwidth]{dislocationFigures/AlCu_11_screw_50b_dissociation_ux.png}
- }}%
-\\
-\subfloat[]{{
- \includegraphics[width=0.5\textwidth]{dislocationFigures/AlCu_11_screw_50b_dissociation_uy.png}
- }}%
-\subfloat[]{{
- \includegraphics[width=0.5\textwidth]{dislocationFigures/AlCu_11_screw_50b_dissociation_uz.png}
- }}%
-\caption{Atomic views of a screw dislocation in FCC Aluminum using an NNP. (a) CNA analysis (green=FCC, red=HCP, blue=BCC, white=Unidentified), (c-d) displacements in the x=[-1,-1,2], y=[1,1,1], and z=[-1,1,0] directions. }
-\label{fig:screwdislocation_views}
+\includegraphics[width=1\textwidth,center]{figures/dislocation_NNPvsDFT.png}%
+\caption{Atomistic structures of the edge and screw a<110>/2 dislocations in pure Al as predicted by DFT and NNP13. (a) Edge dislocation: DFT shows the differential displacement map and the estimated partial dislocation spacing; NNP shows atoms identified by common neighbor analysis (green = FCC, red = HCP; white = other) where the HCP atoms lie in the stacking fault between the two partials and the partial core regions appear as white, with the estimated partial dislocation spacing shown. (b) Screw dislocation: as in (a) but where white and blue atoms identify the screw partial cores.
+DFT image adapted from \cite{Woodward2008PredictionTheory} with permission of the APS
+}%
+\label{fig:dislocation_NNPvsDFT}
 \end{figure}
 
 \begin{figure}[H]%
