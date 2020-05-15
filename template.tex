@@ -188,11 +188,11 @@ Phononpy was then used to determine the minimum set of displacements needed to g
 To test the NNPs developed using the above structures, we also examined a number of other structures that were not included in the above training set:
 \begin{itemize}
   
+    \item GSF for the (111) plane of $\theta''$  [Section \ref{sct:gsf_theta_dp}]
     \item Cu clusters of 3 and 4 atoms in an Al matrix [Section \ref{sct:solute_clusters_KMC}] 
     \item Unrelaxed antisite and vacancy energies for all sites in all OQMD structures [Section \ref{sct:antsite_results}]
-    \item GSF for the (111) plane of $\theta''$  [Section \ref{sct:gsf_theta_dp}]
-    \item Dislocations and fracture in pure Aluminum; there are no precise first-principles results for these structures [Section \ref{sct:fracture_dislocation}]
     \item GP zone formation during annealing as predicted using Kinetic Monte Carlo (KMC); there are no first-principles results for these structures  [Section \ref{sct:solute_clusters_KMC}] 
+    \item Dislocations and fracture in pure Aluminum; there are no precise first-principles results for these structures [Section \ref{sct:fracture_dislocation}]
 \end{itemize}
 
 
@@ -295,7 +295,7 @@ We use a standard 150 epochs of training per NNP after which we found there to b
 
 LAMMPS\cite{Plimpton1995} was used to compute the energies and forces of all structures using the evolving NNP during training via the n2p2 interface. 
 Here, we generated 40 NNPs that differ in the specific 90\% training structures and the initial random weights and biases.  The initial training structure dominates the final NNP.  Note that these 40 NNP are thus not fully independent potentials.  However, they represent the range of potentials that are achieved using this NNP structure, symmetry functions, and set of training structures.  Their predictions for various material properties thus represent the range of properties associated with the NNP details.  The set of 40 NNPs can be used as in a committee model to assess whether a particular new structure outside the overall training dataset may or may not be accurately represented.
-Finally, to provide one specific result, we select the NNP, labelled NNP13, that has the lowest error for $C_{44}$ in Al to highlight from among the 40 different NNPs. This choice is motivated by  the importance and relative difficulty of modeling $C_{44}$ accurately.  In results below, all error bars center on the average of all trained NNPs and indicate +/- one standard deviation.  The NNP13 may fall near the average or outside the error bars; it is just one particular NNP.  This also highlights the care necessary in considering the average and standard deviation across the 40 NNPs: there may not be any single NNP that is within one standard deviation of the average for all properties considered.  Lastly, we reiterate that the standard deviation does not indicate statistically independent results since all NNPs are trained on very similar sets of structures.
+Finally, to provide one specific result, we select the NNP, labelled NNP11, that has the lowest error for $C_{44}$ in Al to highlight from among the 40 different NNPs. This choice is motivated by  the importance and relative difficulty of modeling $C_{44}$ accurately.  In results below, all error bars center on the average of all trained NNPs and indicate +/- one standard deviation.  The NNP11 may fall near the average or outside the error bars; it is just one particular NNP.  This also highlights the care necessary in considering the average and standard deviation across the 40 NNPs: there may not be any single NNP that is within one standard deviation of the average for all properties considered.  Lastly, we reiterate that the standard deviation does not indicate statistically independent results since all NNPs are trained on very similar sets of structures.
 
 
 
@@ -489,6 +489,141 @@ In contrast, at the extremal points, the ADP deviates significantly from the DFT
 
 \section{Results: Validation}
 
+\subsection{Generalized Stacking Faults $\theta''$} \label{sct:gsf_theta_dp}
+
+GP zones and $\theta''$ precipitates are among the most pertinent to understanding mechanical properties of Al-Cu alloys\cite{Nie2014PhysicalAlloys}. 
+The most important plane of shearing in the precipitate is then that which most closely corresponds to the (111)-type glide planes of Al.
+Both the $\theta''$ precipitates and the GP zones are structurally similar, being composed of (100) planes of Cu in Al. 
+The $\theta''$ consists of (100) planes of Cu with one intervening plane of Al spaced by two lattice constants while a GP zone is a single plane of (100) Cu. Here we examine the (111) GSFE surface of $\theta''$ since a GP zone does not have a periodic structure; however, results for $\theta''$ should extrapolate well to GP zones.
+
+Figure \ref{fig:GSF_ThetaDP_111}(a,b) shows the GSFE surface geometry and the energies over the slip surface $\theta''$, as predicted by the NNP and the ADP.  
+Even though outside the training set, the NNP predicts a smooth GSFE with maxima and minima at the expected symmetry points.  The ADP prediction is much less smooth, with a lack of radial symmetry around the extremal points and with sharp ridges extending across the high energy regions.
+Most troubling is that regions of the ADP-predicted $\theta''$ surface are negative, i.e. the sheared precipitate is more stable than the unsheared precipitate.  The ADP cannot be used reliably to investigate shearing of these precipitates.
+Figure \ref{fig:GSF_ThetaDP_111}(c) shows the GSFE energies at the extremal points indicated in Figure \ref{fig:GSF_ThetaDP_111}(b) as predicted by DFT, the NNPs, and the ADP.
+The NNPs are in excellent agreement with the DFT results at all points while the ADP is in serious error at several points.
+Relative to the GSFE of $\theta$ (0$\overline{1}$1) (Figure \ref{fig:GSF_Theta_0m11}), which was in the training dataset, the accuracy of the NNP is lower and with notably higher variation across the family of NNPs.
+Nonetheless, the accuracy remains quite good, validating that these NNPs can be reliable used in complex mechanistically-important environments.
+We also note that the NNPs can be further improved by the inclusion of more training data relevant to particular problems of interest, whereas traditional potentials such as the ADP remain high constrained by the limited degrees of freedom available for describing alloys.
+
+\begin{figure}[H]%
+\centering%
+\subfloat[]{{
+ \includegraphics[width=0.32\textwidth]{figures/GSF_ThetaDP111_AtomicView.png}
+ }}%
+\subfloat[]{{
+ \includegraphics[width=0.68\textwidth]{figures/GSF_ThetaDP111_surf.png}
+ }}%
+\\
+\subfloat[]{{
+ \includegraphics[width=1.00\textwidth]{figures/NOTINOQMD_00002-GSF_111.png}
+ }}%
+\caption{
+In-plane unit cell for the (111) Generalized Stacking Fault Surface of the $\theta''$ precipitate; (b) Generalized Stacking Fault Energy surface as computed by NNP11 and the ADP at a discrete set of points indicated by black dots, from which the energy contour is constructed.  Red points and labels are local minima or maxima for which the energies were computed via DFT and present in the training set; (c) GSFE at the selected extremal points, as computed by DFT (black dots), all the NNPs (blue dashed lines), NNP11 (blue dots), and the ADP (red dots); the structures contributing to the GSFE for these 11 sites are not included in the training set.
+}
+\label{fig:GSF_ThetaDP_111}
+\end{figure}
+
+
+\subsection{Antisites and Vacancies} \label{sct:antsite_results}
+
+In modeling the evolution of precipitate microstructures, it is unavoidable that there will be anti-site defects and vacancies inside the precipitates.  These configurations also serve as further tests of the ability of the NNPs to broadly capture the energetics of the entire Al-Cu system.
+For this reason, we compute the antisite and vacancy formation energies for every OQMD structure that was predicted to be stable using the NNPs (see Figure \ref{fig:matparam_stats1}). 
+Unique atomic sites in each structure were identified using pymatgen.
+The primitive unit cell was then used to generate larger cells with a minimum of 108 atoms to minimize defect-defect interactions.
+For each of the unique sites identified, a different atom was substituted, e.g. Al $\rightarrow$ Cu or Cu $\rightarrow$ Al, or the atom was removed to create a vacancy.  The unrelaxed formation energies $\Delta E^{antisite}_f$ of all the antisite structures were then calculated relative to the solid solution alloy as
+\begin{equation}
+\Delta E^{antisite}_f = E^{antisite} - E^{pristine} - E^{ref}_{new} + E^{ref}_{old}
+\end{equation}
+where $E^{antisite}$ and $E^{pristine}$ are the total energies of the precipitates with and without the antisite defect and $E^{ref}_{new}$, $E^{ref}_{old}$,  are the reference energies for the new and old element respectively, as stated in 
+equations \ref{eqn:formRef_Al} and \ref{eqn:formRef_Cu}.
+
+Figure \ref{fig:antisite_plot} shows the antisite results.
+Note that, for clarity of visualization, when there are multiple antisites for a given element and structure, we only display the one with the lowest DFT energy of formation.
+Error bars rarely exceed 0.1eV and are almost always centered around the correct DFT value.
+ADP also performs reasonably but has substantially more errors, with many samples deviating more than 1eV from DFT.
+These results demonstrate that NNPs make accurate predictions of defects that are not in their training set. 
+
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1\textwidth,center]{figures/antisite_vacancies.png}%
+\caption{DFT antisite formation energy vs. ADP/NNP antisite formation energy.
+These structures were not included in the training set.}%
+\label{fig:antisite_plot}
+\end{figure}
+
+
+\textcolor{red}{\subsection{Albert Section}} \label{sct:thetap_theta_transition}
+\subsection{Solute Clusters and Kinetic Monte Carlo (KMC)} \label{sct:solute_clusters_KMC}
+
+In early-stage precipitation, pre-precipitates are nucleating by formation of small multi-atom clusters.  An understanding of the nucleation and early-stage growth thus requires that a potential properly represent not only many possible precipitate phases and precipitate/matrix interfaces but also possible clusters that cannot be classified as precipitates.   The pair interactions have already been discussed, and so here we focus on 3 and 4 atom clusters of Cu.  We consider clusters recently studied by \cite{Gorbatov2019EffectiveAlloys} et al. as illustrated in the figures of Table \ref{table:solute_cluster} and denoted using the same notation as Gorbatov et al. Among these clusters, we note that the 111 and 111111 (compact triangle and tetrahedron of nearest neighbor Cu atoms, respectively) are not compatible with the formation of GP-I and GP-II zones on the (100) planes that occur in real Al-Cu while the 112, 111112 and 111122 clusters are consistent.
+
+We compute the cluster formation energy $\Delta E^{cluster}_{f,(N-X,X)}$ as the energy of the embedded cluster relative to the energy of Cu in solid solution,
+\begin{equation}
+\Delta E^{cluster}_{f,(N-X,X)} = E^{cluster}_{N-X,X} - \sum_i E^{ref}_i
+\end{equation}
+The DFT values for all the clusters as computed in simulation cells of 256 atoms are shown in Table \ref{table:solute_cluster} along with the NNP and ADP values.  The DFT values predict that the clusters favoring the (100) plane are energetically preferable as compared to the other clusters and with the 111111 cluster even having positive formation energy.  NNP11 is in reasonable agreement with DFT for most of the clusters, but notably predicts an incorrect strongly negative formation energy for the 111111 cluster and also overpredicts the stability of the 111 cluster.  Across the mean and standard deviation of the 40 NNPs, the deviations seen for NNP11 are not evident.  The ADP potential shows gross errors, predicting all clusters to be very energetically favorable and predicting the relative stability of the 3-atom clusters incorrectly (as does NNP11 but with a much smaller difference).  Application of ADP to the study of early-stage clustering is thus expected to be very inaccurate while the performance of the NNPs may vary.  We will investigate this next.
+
+%
+%\begin{figure}[H]%
+%\centering%
+%\includegraphics[width=1\textwidth,center]{figures/ClusterPlot-Daniel-2020.04.15.png}%
+%\caption{Three and four atom clusters considered in this study. 
+%Clusters are described using the the length of edges of the cluster, e.g., 111 represents three edges all nearest neighbors. Note that there are three edges for a three atom cluster but six edges for a four atom cluster.}%
+%\label{fig:atomview_clusters}
+%\end{figure}
+
+\begin{table}[H]
+\begin{tabular}{l|ccccV}%
+\hline%
+&DFT&ADP&NNP11& NNP-\emph{Avg / StdDev} & Figure \\%
+\hline%
+\hline%
+&&&&& \\
+$E^{3Cu}_{111}$ (eV)&-0.073&{-}0.718&{-}0.112&\emph{-0.060 / 0.037}  & \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111.png}  \\%
+$E^{3Cu}_{112}$ (eV)&-0.112&{-}0.595&{-}0.097&\emph{-0.085 / 0.025}  &  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_112.png}\\%
+$E^{4Cu}_{111111}$(eV)&0.039&{-}0.612&{-}0.081&\emph{0.071 / 0.086}  &  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111111.png}\\%
+$E^{4Cu}_{111112}$(eV)&-0.126&{-}1.071&{-}0.184&\emph{-0.093 / 0.066}& \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111112.png} \\%
+$E^{4Cu}_{111122}$(eV)&-0.268&{-}1.275&{-}0.226&\emph{-0.205 / 0.055}&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111122.png}\\%
+$E^{4Cu}_{Unrelaxed}$(eV)&0.322& $-$ &{-}0.226&\emph{ / }&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111122.png}\\%
+$E^{10Cu}_{Unrelaxed}$(eV)&1.62& $-$ &{-}0.226&\emph{ / }&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_10atoms.png}\\%
+\hline%
+\end{tabular}%
+\caption{Cu cluster energies for DFT, ADP and NNP. Clusters are described using the the length of edges of the cluster, e.g., 111 represents three edges all nearest neighbors. Note that there are three edges for a three atom cluster but six edges for a four atom cluster.}
+\label{table:solute_cluster}
+\end{table}
+
+VACANCY MIGRATION BARRIER, CU MIGRATION BARRIER SHOULD HAVE BEEN REPORTED SOMEWHERE EARLIER, NNP VS DFT VS ADP.
+To examine the early-stage clustering under realistic conditions of time and temperature, we perform off-lattice KMC simulations of the evolution of an Al-4\% Cu alloy starting from a random solid solution state.  For this demonstration, we use the vacancy migration barrier $E^{Mig}_{Al}$ in Al as the migration barrier for all vacancy-mediated transitions, and compute the enthalpy barrier between the initial state $i$ and final state $f$ using a simple chemical-kinetics model as
+\begin{equation}
+E^{Mig}_{i-f}= E^{Mig}_{Al} + (E_{f} - E_{i})/2
+\end{equation}
+Where $E_{f}$ and $E_{i}$ are the fully-relaxed final and initial state energies of the entire system.  This approximation does not accurately capture the true time-scale of evolution of the system, but is reasonable for Al-Cu\cite{Mantina2009FirstCoefficients} and satisfies detailed balance.  It should thus enable accurate evolution of the system toward lower-energy metastable configurations.  We use a 1000 atom supercell containing one vacancy and execute simulations at 300K with 4\% Cu and at 696K with 5\% Cu using NNP11 and NNP10, the latter providing a better representation of the energetics of the 3- and 4- atom Cu clusters shown in Table XXXX.
+
+Figure~\ref{fig:gp1} shows a simulation using NNP11 with Al-4\% Cu at 300K after XXXX KMC steps corresponding to ~ XXX seconds using a single attempt frequency of XXXXX.  The system has formed Cu GP1 precipitates consistent with real alloys under similar conditions.  Similar results in terms of structures and energies are obtained starting from different initial random geometries and/or other NNPs.   The NNPs thus consistently capture the behavior expected in real materials.  Gorbatov et al. and Ogata et al. have recently presented KMC studies of the same problem, but using a cluster expansion method and a different Al-Cu potential.  While such studies can generate cluster structures, the cluster expansion method cannot be used to model mechanical properties and any Al-Cu potential would require validation for dislocations and other properties.  These features have been demonstrated here for the current NNPs.
+
+Simulations at higher temperature (696K) and slighly higher Cu concentration (5\%) reveal a different story.  Using NNP11, Figure~\ref{fig:cubulk} shows that a dense block of FCC Cu is formed, and the energy is very much lower than that of the initial solid solution.  This behavior is spurious, and arises because NNP11 has a favorable formation energy for the 3-atom 111 and 4-atom tetrahedral 111111 clusters (table~\ref{table:solute_cluster}) that initiates growth of dense FCC Cu.  Studies of larger dense unrelaxed Cu tetrahedra (Table ZZZ) show that the these are also energetically highly favorable for NNP11 and also for the ADP, while DFT predicts that these structures are energetically very unfavorable.  Thus, this is a situation where the NNP fails in a manner that would give unphysical results, although the ADP has the same problem.  
+
+Across the family of NNPs, however, a number of NNPs capture the energetics of the dense Cu tetrahedra in reasonable agreement with DFT (NNP10 shown in Table XXXX).   This highlights several features.  First, it reinforces that careful validation of an NNP must be done within the range of structures for which the NNP will be used, and validations across many different structures do not imply that a potential can be used in any new situation.  This is also true of traditional potentials, as evidenced by the performance of the ADP for this same problem.  Second, the study of multiple NNPs to the same problem can reveal the possible success of one or more of the NNPs for the desired application, even though all NNPs were trained on very similar training data.  Third, having a family of NNPs can enable mixing and matching of the NNPs in a set of related studies - e.g. NNP10 being used for precipitate evolution in KMC, for instance, while NNP11 (or some other choice) being employed to study dislocations moving through the microstructure established using NNP10.  The close agreement among the family of NNPs for many properties makes such a mix-and-match strategy feasible in a manner that is not as feasible using traditional potentials.
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=6.5in]{kmcFigures/gp1.pdf}
+  \caption{Energy vs simulation time and the final geometry showing Cu GP1 precipitate. The simulation was carried out with potential number '10' at 300K using a 1000 atom supercell containing 40 Cu atoms for $5\times10^6$ KMC steps.
+  \textcolor{red}{Likely to change this figure to a run with the with best C44 potential}
+  }
+  \label{fig:gp1}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=6.5in]{kmcFigures/cubulk.pdf}
+  \caption{Energy vs simulation time and the final geometry showing the non-physical Cu precipitate. The simulation was carried out with potential number '13' at 696K using a 1000 atom supercell containing 50 Cu atoms for $5\times10^6$ KMC steps.
+  \textcolor{red}{Likely to change this figure to a run with the with best C44 potential}
+  }
+  \label{fig:cubulk}
+\end{figure}
+
 \subsection{Dislocations and Fracture in Aluminum} \label{sct:fracture_dislocation}
 
 In any applications of potentials to plasticity and fracture, it is essential to demonstrate that the potential reproduces a reasonable structure for the relevant dislocation(s) and exhibits physically-expected behavior at sharp crack tips.  There are no precise first-principles results for comparisons, but DFT results using other settings and novel simulations methods provide a reference for determining whether the potential is reasonable.  An ML potential can also be compared to other traditional potentials where the behavior has previously been found reasonable.
@@ -527,159 +662,6 @@ Where $\gamma^{USF}$ is the unstable stacking fault energy, $\gamma^{111}$  is t
 We simulate the crack tip behavior following the K-test methodology carefully described by Andric \& Curtin \cite{Andric2019AtomisticFracture}.  We use a simulation cell of size 200*200*10 $\AA^3$, insert a crack terminating along the $z$ direction in the center of the cell, hold boundary atoms fixed at the anistropic elastic predictions for the desired applied stress intensity factor, and allow all interior atoms to relax using the conjugate-gradient method followed by steepest descent with force tolerance 1$e$-05 ev/A.  Successive increments in load level are applied until any notable event occurs at the crack tip.
 Across all 40 NNPs, all show partial dislocation emission and no gross artifacts at the crack tip; a typical example is shown in Figure \ref{fig:fracturedislocation_images}, which is qualitatively similar to results found with many traditional potentials.  The emission event occurred at a critical load of $K_{Ie}=0.354+/-0.007$ (MPa$\sqrt{\text{m}}$), in excellent agreement with the predicted value and with the value found in the direct multiscale DFT simulation.  Among the 40 potentials, 13 showed emission of only the leading partial (Figure \ref{fig:fracturedislocation_images} (a)) while 27 showed the emission of a second twinning partial (Figure \ref{fig:fracturedislocation_images} (b) following the leading partial with no increase in the applied load.  Theory and other simulations show that the second emission event should be the twinning partial occurring just behind the first partial.  The load for this emission depends on several additional factors and is very close to $K_{Ie}=0.30$ (MPa$\sqrt{\text{m}}$) when using the Mishin Al potential, and $K_{Ie}=0.34$ (MPa$\sqrt{\text{m}}$) with the Ercolessi-Adams potential \cite{Mishin1999InteratomicCalculations, Ercolesi1994InteratomicMethod, Andric2017NewEmission}.   Overall, we conclude that all the NNPs for Al provide a very good representation of the crack tip and the first partial emission process.
 
-
-\subsection{Solute Clusters and Kinetic Monte Carlo (KMC)} \label{sct:solute_clusters_KMC}
-
-In early-stage precipitation, pre-precipitates are nucleating by formation of small multi-atom clusters.  An understanding of the nucleation and early-stage growth thus requires that a potential properly represent not only many possible precipitate phases and precipitate/matrix interfaces but also possible clusters that cannot be classified as precipitates.   The pair interactions have already been discussed, and so here we focus on 3 and 4 atom clusters of Cu.  We consider clusters recently studied by \cite{Gorbatov2019EffectiveAlloys} et al. as illustrated in the figures of Table \ref{table:solute_cluster} and denoted using the same notation as Gorbatov et al. Among these clusters, we note that the 111 and 111111 (compact triangle and tetrahedron of nearest neighbor Cu atoms, respectively) are not compatible with the formation of GP-I and GP-II zones on the (100) planes that occur in real Al-Cu while the 112, 111112 and 111122 clusters are consistent.
-
-We compute the cluster formation energy $\Delta E^{cluster}_{f,(N-X,X)}$ as the energy of the embedded cluster relative to the energy of Cu in solid solution,
-\begin{equation}
-\Delta E^{cluster}_{f,(N-X,X)} = E^{cluster}_{N-X,X} - \sum_i E^{ref}_i
-\end{equation}
-The DFT values for all the clusters as computed in simulation cells of 256 atoms are shown in Table \ref{table:solute_cluster} along with the NNP and ADP values.  The DFT values predict that the clusters favoring the (100) plane are energetically preferable as compared to the other clusters and with the 111111 cluster even having positive formation energy.  NNP13 is in reasonable agreement with DFT for most of the clusters, but notably predicts an incorrect strongly negative formation energy for the 111111 cluster and also overpredicts the stability of the 111 cluster.  Across the mean and standard deviation of the 40 NNPs, the deviations seen for NNP13 are not evident.  The ADP potential shows gross errors, predicting all clusters to be very energetically favorable and predicting the relative stability of the 3-atom clusters incorrectly (as does NNP13 but with a much smaller difference).  Application of ADP to the study of early-stage clustering is thus expected to be very inaccurate while the performance of the NNPs may vary.  We will investigate this next.
-
-%
-%\begin{figure}[H]%
-%\centering%
-%\includegraphics[width=1\textwidth,center]{figures/ClusterPlot-Daniel-2020.04.15.png}%
-%\caption{Three and four atom clusters considered in this study. 
-%Clusters are described using the the length of edges of the cluster, e.g., 111 represents three edges all nearest neighbors. Note that there are three edges for a three atom cluster but six edges for a four atom cluster.}%
-%\label{fig:atomview_clusters}
-%\end{figure}
-
-\begin{table}[H]
-\begin{tabular}{l|ccccV}%
-\hline%
-&DFT&ADP&NNP13& NNP-\emph{Avg / StdDev} & Figure \\%
-\hline%
-\hline%
-&&&&& \\
-$E^{3Cu}_{111}$ (eV)&-0.073&{-}0.718&{-}0.112&\emph{-0.060 / 0.037}  & \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111.png}  \\%
-$E^{3Cu}_{112}$ (eV)&-0.112&{-}0.595&{-}0.097&\emph{-0.085 / 0.025}  &  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_112.png}\\%
-$E^{4Cu}_{111111}$(eV)&0.039&{-}0.612&{-}0.081&\emph{0.071 / 0.086}  &  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111111.png}\\%
-$E^{4Cu}_{111112}$(eV)&-0.126&{-}1.071&{-}0.184&\emph{-0.093 / 0.066}& \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111112.png} \\%
-$E^{4Cu}_{111122}$(eV)&-0.268&{-}1.275&{-}0.226&\emph{-0.205 / 0.055}&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111122.png}\\%
-\hline%
-\end{tabular}%
-\caption{Cu cluster energies for DFT, ADP and NNP. Clusters are described using the the length of edges of the cluster, e.g., 111 represents three edges all nearest neighbors. Note that there are three edges for a three atom cluster but six edges for a four atom cluster.}
-\label{table:solute_cluster}
-\end{table}
-
-VACANCY MIGRATION BARRIER, CU MIGRATION BARRIER SHOULD HAVE BEEN REPORTED SOMEWHERE EARLIER, NNP VS DFT VS ADP.
-To examine the early-stage clustering under realistic conditions of time and temperature, we perform off-lattice KMC simulations of the evolution of an Al-4\% Cu alloy starting from a random solid solution state.  For this demonstration, we use the vacancy migration barrier $E^{Mig}_{Al}$ in Al as the migration barrier for all vacancy-mediated transitions, and compute the enthalpy barrier between the initial state $i$ and final state $f$ using a simple chemical-kinetics model as
-\begin{equation}
-E^{Mig}_{i-f}= E^{Mig}_{Al} + (E_{f} - E_{i})/2
-\end{equation}
-Where $E_{f}$ and $E_{i}$ are the fully-relaxed final and initial state energies of the entire system.  This approximation does not accurately capture the true time-scale of evolution of the system, but is reasonable for Al-Cu\cite{Mantina2009FirstCoefficients} and satisfies detailed balance.  It should thus enable accurate evolution of the system toward lower-energy metastable configurations.  We use a 1000 atom supercell containing one vacancy and execute simulations at 300K with 4\% Cu and at 696K with 5\% Cu using NNP13 and NNP10, the latter providing a better representation of the energetics of the 3- and 4- atom Cu clusters shown in Table XXXX.
-
-Figure~\ref{fig:gp1} shows a simulation using NNP13 with Al-4\% Cu at 300K after XXXX KMC steps corresponding to ~ XXX seconds using a single attempt frequency of XXXXX.  The system has formed Cu GP1 precipitates consistent with real alloys under similar conditions.  Similar results in terms of structures and energies are obtained starting from different initial random geometries and/or other NNPs.   The NNPs thus consistently capture the behavior expected in real materials.  Gorbatov et al. and Ogata et al. have recently presented KMC studies of the same problem, but using a cluster expansion method and a different Al-Cu potential.  While such studies can generate cluster structures, the cluster expansion method cannot be used to model mechanical properties and any Al-Cu potential would require validation for dislocations and other properties.  These features have been demonstrated here for the current NNPs.
-
-Simulations at higher temperature (696K) and slighly higher Cu concentration (5\%) reveal a different story.  Using NNP13, Figure~\ref{fig:cubulk} shows that a dense block of FCC Cu is formed, and the energy is very much lower than that of the initial solid solution.  This behavior is spurious, and arises because NNP13 has a favorable formation energy for the 3-atom 111 and 4-atom tetrahedral 111111 clusters (table~\ref{tab:cuclust}) that initiates growth of dense FCC Cu.  Studies of larger dense unrelaxed Cu tetrahedra (Table ZZZ) show that the these are also energetically highly favorable for NNP13 and also for the ADP, while DFT predicts that these structures are energetically very unfavorable.  Thus, this is a situation where the NNP fails in a manner that would give unphysical results, although the ADP has the same problem.  
-
-Across the family of NNPs, however, a number of NNPs capture the energetics of the dense Cu tetrahedra in reasonable agreement with DFT (NNP10 shown in Table XXXX).   This highlights several features.  First, it reinforces that careful validation of an NNP must be done within the range of structures for which the NNP will be used, and validations across many different structures do not imply that a potential can be used in any new situation.  This is also true of traditional potentials, as evidenced by the performance of the ADP for this same problem.  Second, the study of multiple NNPs to the same problem can reveal the possible success of one or more of the NNPs for the desired application, even though all NNPs were trained on very similar training data.  Third, having a family of NNPs can enable mixing and matching of the NNPs in a set of related studies - e.g. NNP10 being used for precipitate evolution in KMC, for instance, while NNP13 (or some other choice) being employed to study dislocations moving through the microstructure established using NNP10.  The close agreement among the family of NNPs for many properties makes such a mix-and-match strategy feasible in a manner that is not as feasible using traditional potentials.
-
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=6.5in]{kmcFigures/gp1.pdf}
-  \caption{Energy vs simulation time and the final geometry showing Cu GP1 precipitate. The simulation was carried out with potential number '10' at 300K using a 1000 atom supercell containing 40 Cu atoms for $5\times10^6$ KMC steps.
-  \textcolor{red}{Likely to change this figure to a run with the with best C44 potential}
-  }
-  \label{fig:gp1}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=6.5in]{kmcFigures/cubulk.pdf}
-  \caption{Energy vs simulation time and the final geometry showing the non-physical Cu precipitate. The simulation was carried out with potential number '13' at 696K using a 1000 atom supercell containing 50 Cu atoms for $5\times10^6$ KMC steps.
-  \textcolor{red}{Likely to change this figure to a run with the with best C44 potential}
-  }
-  \label{fig:cubulk}
-\end{figure}
-
-
-\textcolor{red}{This table will be consolidated with Table \ref{table:solute_cluster}}
-\begin{table}[H]
- \caption{Formation energies of closed pack Cu clusters in Al matrix}
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    & \multicolumn{2}{c}{Formation energy [eV]}                   \\
-    \cmidrule(r){2-3}
-    Cluster     & NNP 10     & NNP 13 \\
-    \midrule
-    4 atoms & 0.015  & $-0.085$     \\
-    10 atoms     & 0.961 & $-0.512$      \\
-    20 atoms     & 4.791       &  $-2.019$  \\
-    35 atoms     & 11.462       &  $-5.222$  \\
-    \bottomrule
-  \end{tabular}
-  \label{tab:cuclust}
-\end{table}
-
-\subsection{Antisites and Vacancies} \label{sct:antsite_results}
-
-In modeling the evolution of precipitate microstructures, it is unavoidable that there will be anti-site defects and vacancies inside the precipitates.  These configurations also serve as further tests of the ability of the NNPs to broadly capture the energetics of the entire Al-Cu system.
-For this reason, we compute the antisite and vacancy formation energies for every OQMD structure that was predicted to be stable using the NNPs (see Figure \ref{fig:matparam_stats1}). 
-Unique atomic sites in each structure were identified using pymatgen.
-The primitive unit cell was then used to generate larger cells with a minimum of 108 atoms to minimize defect-defect interactions.
-For each of the unique sites identified, a different atom was substituted, e.g. Al $\rightarrow$ Cu or Cu $\rightarrow$ Al, or the atom was removed to create a vacancy.  The unrelaxed formation energies $\Delta E^{antisite}_f$ of all the antisite structures were then calculated relative to the solid solution alloy as
-\begin{equation}
-\Delta E^{antisite}_f = E^{antisite} - E^{pristine} - E^{ref}_{new} + E^{ref}_{old}
-\end{equation}
-where $E^{antisite}$ and $E^{pristine}$ are the total energies of the precipitates with and without the antisite defect and $E^{ref}_{new}$, $E^{ref}_{old}$,  are the reference energies for the new and old element respectively, as stated in 
-equations \ref{eqn:formRef_Al} and \ref{eqn:formRef_Cu}.
-
-Figure \ref{fig:antisite_plot} shows the antisite results.
-Note that, for clarity of visualization, when there are multiple antisites for a given element and structure, we only display the one with the lowest DFT energy of formation.
-Error bars rarely exceed 0.1eV and are almost always centered around the correct DFT value.
-ADP also performs reasonably but has substantially more errors, with many samples deviating more than 1eV from DFT.
-These results demonstrate that NNPs make accurate predictions of defects that are not in their training set. 
-
-\begin{figure}[H]%
-\centering%
-\includegraphics[width=1\textwidth,center]{figures/antisite_vacancies.png}%
-\caption{DFT antisite formation energy vs. ADP/NNP antisite formation energy.
-These structures were not included in the training set.}%
-\label{fig:antisite_plot}
-\end{figure}
-
-
-\textcolor{red}{\subsection{Albert Section}} \label{sct:thetap_theta_transition}
-
-\subsection{Generalized Stacking Faults $\theta''$} \label{sct:gsf_theta_dp}
-
-GP zones and $\theta''$ precipitates are among the most pertinent to understanding mechanical properties of Al-Cu alloys\cite{Nie2014PhysicalAlloys}. 
-The most important plane of shearing in the precipitate is then that which most closely corresponds to the (111)-type glide planes of Al.
-Both the $\theta''$ precipitates and the GP zones are structurally similar, being composed of (100) planes of Cu in Al. 
-The $\theta''$ consists of (100) planes of Cu with one intervening plane of Al spaced by two lattice constants while a GP zone is a single plane of (100) Cu. Here we examine the (111) GSFE surface of $\theta''$ since a GP zone does not have a periodic structure; however, results for $\theta''$ should extrapolate well to GP zones.
-
-Figure \ref{fig:GSF_ThetaDP_111}(a,b) shows the GSFE surface geometry and the energies over the slip surface $\theta''$, as predicted by the NNP and the ADP.  
-Even though outside the training set, the NNP predicts a smooth GSFE with maxima and minima at the expected symmetry points.  The ADP prediction is much less smooth, with a lack of radial symmetry around the extremal points and with sharp ridges extending across the high energy regions.
-Most troubling is that regions of the ADP-predicted $\theta''$ surface are negative, i.e. the sheared precipitate is more stable than the unsheared precipitate.  The ADP cannot be used reliably to investigate shearing of these precipitates.
-Figure \ref{fig:GSF_ThetaDP_111}(c) shows the GSFE energies at the extremal points indicated in Figure \ref{fig:GSF_ThetaDP_111}(b) as predicted by DFT, the NNPs, and the ADP.
-The NNPs are in excellent agreement with the DFT results at all points while the ADP is in serious error at several points.
-Relative to the GSFE of $\theta$ (0$\overline{1}$1) (Figure \ref{fig:GSF_Theta_0m11}), which was in the training dataset, the accuracy of the NNP is lower and with notably higher variation across the family of NNPs.
-Nonetheless, the accuracy remains quite good, validating that these NNPs can be reliable used in complex mechanistically-important environments.
-We also note that the NNPs can be further improved by the inclusion of more training data relevant to particular problems of interest, whereas traditional potentials such as the ADP remain high constrained by the limited degrees of freedom available for describing alloys.
-
-\begin{figure}[H]%
-\centering%
-\subfloat[]{{
- \includegraphics[width=0.32\textwidth]{figures/GSF_ThetaDP111_AtomicView.png}
- }}%
-\subfloat[]{{
- \includegraphics[width=0.68\textwidth]{figures/GSF_ThetaDP111_surf.png}
- }}%
-\\
-\subfloat[]{{
- \includegraphics[width=1.00\textwidth]{figures/NOTINOQMD_00002-GSF_111.png}
- }}%
-\caption{
-In-plane unit cell for the (111) Generalized Stacking Fault Surface of the $\theta''$ precipitate; (b) Generalized Stacking Fault Energy surface as computed by NNP11 and the ADP at a discrete set of points indicated by black dots, from which the energy contour is constructed.  Red points and labels are local minima or maxima for which the energies were computed via DFT and present in the training set; (c) GSFE at the selected extremal points, as computed by DFT (black dots), all the NNPs (blue dashed lines), NNP11 (blue dots), and the ADP (red dots); the structures contributing to the GSFE for these 11 sites are not included in the training set.
-}
-\label{fig:GSF_ThetaDP_111}
-\end{figure}
 
 
 \section{Conclusion}
@@ -848,7 +830,7 @@ Cu &  Al &  Cu & $3.900 \times 10^{-3}$ &  1 &  1.0 & $1.600 \times 10^{1}$ \\
 \begin{figure}[H]%
 \centering%
 \includegraphics[width=1\textwidth,center]{figures/dislocation_NNPvsDFT.png}%
-\caption{Atomistic structures of the edge and screw a<110>/2 dislocations in pure Al as predicted by DFT and NNP13. (a) Edge dislocation: DFT shows the differential displacement map and the estimated partial dislocation spacing; NNP shows atoms identified by common neighbor analysis (green = FCC, red = HCP; white = other) where the HCP atoms lie in the stacking fault between the two partials and the partial core regions appear as white, with the estimated partial dislocation spacing shown. (b) Screw dislocation: as in (a) but where white and blue atoms identify the screw partial cores.
+\caption{Atomistic structures of the edge and screw a<110>/2 dislocations in pure Al as predicted by DFT and NNP11. (a) Edge dislocation: DFT shows the differential displacement map and the estimated partial dislocation spacing; NNP shows atoms identified by common neighbor analysis (green = FCC, red = HCP; white = other) where the HCP atoms lie in the stacking fault between the two partials and the partial core regions appear as white, with the estimated partial dislocation spacing shown. (b) Screw dislocation: as in (a) but where white and blue atoms identify the screw partial cores.
 DFT image adapted from \cite{Woodward2008PredictionTheory} with permission of the APS
 }%
 \label{fig:dislocation_NNPvsDFT}
@@ -875,7 +857,7 @@ Green atoms are those in FCC configuration, red are for HCP (i.e. stacking fault
 \begin{tabular}{l|lll|lll}%
 \hline%
 Structure&\multicolumn{3}{c}{FCC Al}&\multicolumn{3}{c}{FCC Cu}\\%
-Method&DFT&NNP&ADP&DFT&NNP&ADP\\%
+Method&DFT&NNP11&ADP&DFT&NNP11&ADP\\%
 \hline%
 a ($\AA$)&4.04&4.047&4.05&3.625&3.627&3.615\\%
 vol/atom ($\AA^3$)&16.48&16.58&16.61&11.9&11.93&11.81\\%
@@ -894,7 +876,7 @@ $C_{44}$ (GPa)&34.0&38.2&31.9&80.8&86.3&76.5\\%
 \begin{tabular}{l|ccc|ccc|ccc}%
 \hline%
 Structure&\multicolumn{3}{c}{Al$_2$Cu  $\theta$}&\multicolumn{3}{c}{Al$_2$Cu $\theta'$}&\multicolumn{3}{c}{Al$_3$Cu $\theta''$}\\%
-Method&DFT&NNP&ADP&DFT&NNP&ADP&DFT&NNP&ADP\\%
+Method&DFT&NNP11&ADP&DFT&NNP11&ADP&DFT&NNP11&ADP\\%
 \hline%
 a ($\AA$)&4.869&4.917&4.862&4.087&4.095&3.994&2.804&2.792&2.784\\%
 b ($\AA$)&4.926&4.929&4.862&4.087&4.095&3.994&2.804&2.792&2.784\\%
