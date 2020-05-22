@@ -309,11 +309,23 @@ Here we look at the root mean square error (RMSE) for structures in the testing 
 Over all 40 NNPs there is an average RMSE for the energy of 2.49 meV/Atom for testing and 69.15 meV/atom for training, while the testing and training RMSE for the forces are 23.9 eV/$\AA$ and 35.93 eV/$\AA$, respectively.  These would appear to be unacceptably large testing errors, indicating poor potential quality.  In fact, most of the NNPs show only a modest difference, with 21 out of the 40 potentials having a testing RMSE for energy of less than 5 meV/atom.  The major contributor to the large error in the RMSE values for the remaining potentials is due to a single outlier structure under very high compression.  Examining NNP11 as an example, the  RMSE for energy is 2.58 meV/atom for the training set but 26.51 meV/atom for the testing set, but the histogram of errors shown in \ref{fig:rmse_histogram} reveals the single outlier, which is FCC Al at lattice constant $a/a_0 =0.81$.   The testing RMSE for NNP11 without this outlier structure would fall to a very acceptable value of only 3.46 meV/atom.
 For all other NNPs with high test/train error ratios, the cause was found to be outlier structures with $a/a_0 ~= 0.8$. 
 
-\begin{figure}[H]
+%\begin{figure}[H]
+%\centering%
+%\includegraphics[width=0.7\textwidth,center]{figures/plot_nnperrors_histogram.png}%
+%\caption{Histogram of energy errors for both training and testing for NNP11}%
+%\label{fig:rmse_histogram}
+%\end{figure}
+
+\begin{figure}[H]%
 \centering%
-\includegraphics[width=0.7\textwidth,center]{figures/plot_nnperrors_histogram.png}%
-\caption{Histogram of energy errors for both training and testing for NNP11}%
-\label{fig:rmse_histogram}
+\subfloat[]{{
+ \includegraphics[width=0.50\textwidth]{figures/plot_nnperrors_histogram.png}
+ }}%
+\subfloat[]{{
+ \includegraphics[width=0.50\textwidth]{figures/plot_nnperrors_forces_histogram.png}
+ }}%
+\caption{Histogram of energy (a) and forces (b) errors for both training and testing for NNP11}
+\label{fig:rsme_histogram}
 \end{figure}
 
 The predictions of ML potentials at high compression outside the domain of training is commonly highlighted as a failure of NNPs.
