@@ -524,7 +524,8 @@ equations \ref{eqn:formRef_Al} and \ref{eqn:formRef_Cu}.
 
 Figure \ref{fig:antisite_plot} shows the antisite results.
 %Note that, for clarity of visualization, when there are multiple antisites for a given element and structure, we only display the one with the lowest DFT energy of formation.
-For so
+When there are multiple possible antisites or vacancies for a given element in a structure, we only plot the one with the lowest DFT formation energy, this is purely to make the figure easier to read, the overall accuracy being the same for all vacancies and antisites. 
+For completeness we include Figure \ref{} in the supplementary which shows the energies for all antisites and vacancies.
 Error bars rarely exceed 0.1eV and are almost always centered around the correct DFT value.
 ADP also performs reasonably but has substantially more errors, with many cases deviating by more than 1 eV from DFT.
 These results demonstrate that NNPs make accurate predictions of point defects that are not in the training set. 
@@ -646,27 +647,28 @@ $E^{3Cu}_{112}$ (eV)&-0.112&{-}0.595&{-}0.097& -0.127 &\emph{-0.085 / 0.025}  & 
 $E^{4Cu}_{111111}$(eV)&0.039&{-}0.612&{-}0.081& -0.003 &\emph{0.071 / 0.086}  &  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111111.png}\\%
 $E^{4Cu}_{111112}$(eV)&-0.126&{-}1.071&{-}0.184& -0.183 &\emph{-0.093 / 0.066}& \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111112.png} \\%
 $E^{4Cu}_{111122}$(eV)&-0.268&{-}1.275&{-}0.226& -0.312 &\emph{-0.205 / 0.055}&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111122.png}\\%
-$E^{4Cu}_{Unrelaxed}$(eV)&0.322& $-$ &0.435&0.464&\emph{ / }&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111122.png}\\%
-$E^{10Cu}_{Unrelaxed}$(eV)&1.62& $-$ &1.589& 2.254 &\emph{ / }&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_10atoms.png}\\%
+$E^{4Cu}_{Unrelaxed}$(eV)&0.322& $-$ &0.435&0.464&\emph{0.576 / 0.093}&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_111122.png}\\%
+$E^{10Cu}_{Unrelaxed}$(eV)&1.62& $-$ &1.589& 2.254 &\emph{2.275 / 0.618}&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_10atoms.png}\\%
 %$E^{10Cu}_{Unrelaxed}$(eV)&1.62& $-$ &\textcolor{red}{?}& - &\emph{ / }&  \includegraphics[width=0.07\textwidth]{figures/SoluteCluster_10atoms_v2.png}\\%
 \hline%
 \end{tabular}%
-\caption{Cu cluster energies for DFT, ADP and NNP. Clusters are described using the the length of edges of the cluster, e.g., 111 represents three edges all nearest neighbors. Note that there are three edges for a three atom cluster but six edges for a four atom cluster. \textcolor{red}{ABHINAV CAN YOU ADD A SENTENCE GIVING AN EXAMPLE OF AN NNP THAT HAS NEGATIVE ENERGY FOR A CLUSTER. E.G. NNP13 IS -0.634 eV FOR A 20 ATOM CLUSTER. (I FORGET IF THIS IS A CORRECT VALUE OR NOT.}}
+\caption{Cu cluster energies for DFT, ADP and NNP. Clusters are described using the the length of edges of the cluster, e.g., 111 represents three edges all nearest neighbors. Note that there are three edges for a three atom cluster but six edges for a four atom cluster.
+}
 \label{table:solute_cluster}
 \end{table}
 
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{lllll}
+	\begin{tabular}{l|ccccc}
 		\toprule
-		& \multicolumn{4}{c}{Migration energy [eV]}                   \\
-		\cmidrule(r){2-5}
-		Rate         & DFT$^1$                & NNP11 & NNP10 & ADP \\
+		& \multicolumn{5}{c}{Migration energy [eV]}                   \\
+		\cmidrule(r){2-6}
+		Rate         & DFT$^1$    & ADP  & NNP11 & NNP10  & NNP-\emph{Avg / StdDev}  \\
 		\midrule
-		$\omega^{0}$ & 0.58 & 0.58 & 0.58 & 0.63 \\
-		$\omega^{1}$ & 0.38 & 0.41 & 0.42 & 0.46 \\
-		$\omega^{2}$ & 0.57 & 0.43 & 0.52 & 0.76 \\
+		$\omega^{0}$ & 0.58 & 0.63 & 0.58 & 0.58 & \emph{0.58 / 0.01}\\
+		$\omega^{1}$ & 0.38 & 0.46 & 0.41 & 0.42 & \emph{0.42 / 0.02}\\
+		$\omega^{2}$ & 0.57 & 0.76 & 0.43 & 0.52 & \emph{0.47 / 0.04}\\
 		\bottomrule
 	\end{tabular}
 	\caption{Vacancy migration barriers with a single Cu atom in the Al matrix. The labels (0,1,2) are consistent with the 5-frequency model for FCC lattice. $^1$The reported DFT results were computed by Mantina \textit{et. al}\cite{Mantina2009FirstCoefficients}.}
@@ -904,6 +906,15 @@ Cu &  Al &  Cu & $3.900 \times 10^{-3}$ &  1 &  1.0 & $1.600 \times 10^{1}$ \\
 \label{fig:solsol_in_cu}
 \end{figure}
 
+\subsection{Additional Antisite Figures} \label{apd_sct:adn_antisites}
+\begin{figure}[H]%
+\centering%
+\includegraphics[width=1\textwidth,center]{figures/antisite_vacancies_allsites.png}%
+\caption{DFT antisite formation energy vs. ADP/NNP antisite formation energy
+for all vacancies and antisites.
+These structures were not included in the training set.}%
+\label{fig:antisite_plot_all}
+\end{figure}
 
 \subsection{Dislocations and Fracture} \label{apd_sct:fracturedislocation_images}
 
