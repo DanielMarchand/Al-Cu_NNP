@@ -306,15 +306,8 @@ Here we look at the root mean square error (RMSE) for structures in the testing 
 \begin{equation}
         RMSE(F) = (\frac{1}{N^{struct}}\sum_i^{N^{struct}}\sum_j^{3N^{atom}_i}\frac{1}{3N^{atom}_i} (F^{DFT}_{i,j} - F^{NNP}_{i,j})^2)^\frac{1}{2}
 \end{equation}
-Over all 40 NNPs there is an average RMSE for the energy of 2.49 meV/Atom for testing and 69.15 meV/atom for training, while the testing and training RMSE for the forces are 23.9 eV/$\AA$ and 35.93 eV/$\AA$, respectively.  These would appear to be unacceptably large testing errors, indicating poor potential quality.  In fact, most of the NNPs show only a modest difference, with 21 out of the 40 potentials having a testing RMSE for energy of less than 5 meV/atom.  The major contributor to the large error in the RMSE values for the remaining potentials is due to a single outlier structure under very high compression.  Examining NNP11 as an example, the  RMSE for energy is 2.58 meV/atom for the training set but 26.51 meV/atom for the testing set, but the histogram of errors shown in \ref{fig:rmse_histogram} reveals the single outlier, which is FCC Al at lattice constant $a/a_0 =0.81$.   The testing RMSE for NNP11 without this outlier structure would fall to a very acceptable value of only 3.46 meV/atom.
+Over all 40 NNPs there is an average RMSE for the energy of 2.49 meV/Atom for testing and 69.15 meV/atom for training, while the testing and training RMSE for the forces are 23.9 meV/$\AA$ and 35.93 meV/$\AA$, respectively.  These would appear to be unacceptably large testing errors, indicating poor potential quality.  In fact, most of the NNPs show only a modest difference, with 21 out of the 40 potentials having a testing RMSE for energy of less than 5 meV/atom.  The major contributor to the large error in the RMSE values for the remaining potentials is due to a single outlier structure under very high compression.  Examining NNP11 as an example, the  RMSE for energy is 2.58 meV/atom for the training set but 26.51 meV/atom for the testing set, but the histogram of errors shown in Figure \ref{fig:rsme_histogram} (a) reveals the single outlier, which is FCC Al at lattice constant $a/a_0 =0.81$.   The testing RMSE for NNP11 without this outlier structure would fall to a very acceptable value of only 3.46 meV/atom. The forces follow a nearly uniform error distribution, and does not have an outlier like in the energies, as can be seen in Figure \ref{fig:rmse_histogram} (b).  
 For all other NNPs with high test/train error ratios, the cause was found to be outlier structures with $a/a_0 ~= 0.8$. 
-
-%\begin{figure}[H]
-%\centering%
-%\includegraphics[width=0.7\textwidth,center]{figures/plot_nnperrors_histogram.png}%
-%\caption{Histogram of energy errors for both training and testing for NNP11}%
-%\label{fig:rmse_histogram}
-%\end{figure}
 
 \begin{figure}[H]%
 \centering%
@@ -324,7 +317,7 @@ For all other NNPs with high test/train error ratios, the cause was found to be 
 \subfloat[]{{
  \includegraphics[width=0.50\textwidth]{figures/plot_nnperrors_forces_histogram.png}
  }}%
-\caption{Histogram of energy (a) and forces (b) errors for both training and testing for NNP11}
+\caption{Histogram of errors for the (a) energy and  (b) forces for both training and testing for NNP11}
 \label{fig:rsme_histogram}
 \end{figure}
 
@@ -551,20 +544,29 @@ These structures were not included in the training set.}%
 \end{figure}
 
 \subsection{$\theta$ to $\theta'$ transition temperature} \label{sct:thetap_theta_transition}
-We now turn to the investigation of the phase transition between the $\theta$ phase and the $\theta'$, comparing the NNPs to the ADP. The T=0K formation energies of both phases have been presented in Figure XXXX, and both the NNPs and ADP provide good predictions, with the ADP results also previously reported ~\cite{Apostol2011}. An analysis of the finite-T Gibbs free energy starts with the underlying equations of state of both phases.  Fitting of the T=0K equation of state to the Vinet model (PUT THE MODEL EQUATION HERE) (ONE SMALL TABLE WITH ONLY THE B' VALUES FOR BOTH PHASES) reveals that the ADP potential predicts a large negative value for the derivative $B'$ of the bulk modulus for the $\theta$ phase, which has critical implications for phase stability.  The $B'$ values predicted by NNP11 ??? differ are positive but differ from the DFT reference for both phases while the ADP value for the $\theta'$ value is in better agreement with DFT.
+We now turn to the investigation of the phase transition between the $\theta$ phase and the $\theta'$, comparing the NNPs to the ADP. The T=0K formation energies of both phases have been presented in Figure \ref{fig:matparam_stats1}, and both the NNPs and ADP provide good predictions, with the ADP results also previously reported ~\cite{Apostol2011}. An analysis of the finite-T Gibbs free energy starts with the underlying equations of state of both phases. We therefore fit the T=0K energies to the Vinet equation of state
 
-REDUCE TO ONE TABLE WITH ONLY THE B' VALUES.  MODIFY CAPTION.  REFER TO T=0K, NOT GROUND STATE.
+\begin{eqnarray}
+\label{Vinet}
+E^{}_{0}(V) &\!\!=\!\!& E^{}_{0}(V^{\rm eq}_0) \;+\; \frac{4B_{T\!,0}V^{\rm eq}_0}{(B_{T\!,0}' -1)^2} \;-\; \frac{V^{\rm eq}_0B_{T\!,0}}{(B_{T\!,0}'
+% B^{\rm eq}_0 \text{\begin{minipage}{.3cm}
+%  \hspace{.0cm}\Large$'$\vspace{.2cm}
+% \end{minipage}}
+-1)^2} \:\left\{ 5+3B_{T\!,0}'\left[ \left(\frac{V}{V^{\rm eq}_0}\right)^{1/3}\!\!\!-1 \right]-3\left(\frac{V}{V^{\rm eq}_0}\right)^{1/3} \right\}\nonumber\\[.1cm]
+&& \hspace{5.05cm}\text{\Large$\times$} \exp \left\{ -\frac{3}{2}\left(B_{T\!,0}'-1\right)\left[ \left(\frac{V}{V^{\rm eq}_0}\right)^{1/3}\!\!\!-1 \right] \right\},
+\end{eqnarray}
+
+with volume $V$, the equilibrium volume at T=0K $V^{\rm eq}_0$, the isothermal bulk modulus $B_{T,0}$ and the pressure derivative of the isothermal bulk modulus $B_{T,0}'$. Table~\ref{albert_tab1} reveals that the ADP potential predicts a large negative value for the derivative $B_{T,0}'$ of the bulk modulus for the $\theta$ phase, which has critical implications for phase stability. The $B_{T,0}'$ values predicted by our neural network differ from the DFT reference for both phases but are positive while the ADP value for the $\theta'$ is in better agreement with DFT.
+
 \begin{table}[H]
-    \caption{Ground state properties for the $\theta'$ phase comparing previously reported ADP results~\cite{Apostol2011} to our calculations using ADP, DFT, and our neural network.}
-\begin{tabular}{lcccc}
+    \caption{Derivative of the isothermal bulk modulus $B_{T,0}'$ at T=0K  for the $\theta$ an $\theta'$ phases comparing ADP, DFT, and our neural network.}
+\begin{tabular}{lccc}
 \hline
 \hline
-Property        & ADP~\cite{Apostol2011}             & ADP          & DFT        & Neural Network \\ 
-                & Apostol et al.        & (this work)  & (this work)& (this work)    \\ 
+Phase        & ADP (this work)          & DFT        & Neural Network \\ 
 \hline 
-a  (\AA)        & 5.649                 & 5.649        & 5.780      & 5.79           \\
-B  (GPa)        & 135.9                 & 136.3        & 94.47      & 96.7           \\
-B' (no units)   & -                     & 2.9          & 4.58       & 1.03           \\ 
+Theta ($\theta$)        & -4.2      & 4.55     & 2.29  \\
+Theta prime ($\theta'$)        & 2.9    & 4.58 & 1.03 \\      
 \hline
 \hline
 \end{tabular}
@@ -572,23 +574,41 @@ B' (no units)   & -                     & 2.9          & 4.58       & 1.03      
 \end{table}
 
 
-\begin{table}[H]
-    \caption{Ground state properties for the $\theta$ phase comparing previously reported ADP results~\cite{Apostol2011} to our calculations using ADP, DFT, and our neural network.}
-\begin{tabular}{lcccc}
-\hline
-\hline
-Property        & ADP~\cite{Apostol2011}             & ADP          & DFT        & Neural Network \\ 
-               & Apostol et al.        & (this work)  & (this work)& (this work)    \\ 
-\hline 
-a  (\AA)        & 5.935                 & 5.935        & 6.056      & 6.037          \\
-c  (\AA)        & 4.908                 & 4.908        & 4.869      & 4.925          \\
-B  (GPa)        & 147.6                 & 146.8        & 99.60      & 114.86         \\
-B' (no units)   & -                     & -4.2         & 4.55       & 2.29           \\ 
-\hline
-\hline
-\end{tabular}
-\label{albert_tab2}
-\end{table}
+% \begin{table}[H]
+%     \caption{Ground state properties for the $\theta'$ phase comparing previously reported ADP results~\cite{Apostol2011} to our calculations using ADP, DFT, and our neural network.}
+% \begin{tabular}{lcccc}
+% \hline
+% \hline
+% Property        & ADP~\cite{Apostol2011}             & ADP          & DFT        & Neural Network \\ 
+%                 & Apostol et al.        & (this work)  & (this work)& (this work)    \\ 
+% \hline 
+% a  (\AA)        & 5.649                 & 5.649        & 5.780      & 5.79           \\
+% B  (GPa)        & 135.9                 & 136.3        & 94.47      & 96.7           \\
+% B' (no units)   & -                     & 2.9          & 4.58       & 1.03           \\ 
+% \hline
+% \hline
+% \end{tabular}
+% \label{albert_tab1}
+% \end{table}
+
+
+% \begin{table}[H]
+%     \caption{Ground state properties for the $\theta$ phase comparing previously reported ADP results~\cite{Apostol2011} to our calculations using ADP, DFT, and our neural network.}
+% \begin{tabular}{lcccc}
+% \hline
+% \hline
+% Property        & ADP~\cite{Apostol2011}             & ADP          & DFT        & Neural Network \\ 
+%               & Apostol et al.        & (this work)  & (this work)& (this work)    \\ 
+% \hline 
+% a  (\AA)        & 5.935                 & 5.935        & 6.056      & 6.037          \\
+% c  (\AA)        & 4.908                 & 4.908        & 4.869      & 4.925          \\
+% B  (GPa)        & 147.6                 & 146.8        & 99.60      & 114.86         \\
+% B' (no units)   & -                     & -4.2         & 4.55       & 2.29           \\ 
+% \hline
+% \hline
+% \end{tabular}
+% \label{albert_tab2}
+% \end{table}
 
 The full anharmonic Gibbs free energy versus temperature for both $\theta'$ and $\theta$ phases is computed using the methodology in Refs. [~\cite{Grabowski2009,Glensk2015,Glensk2015b}]. We first compute the quasiharmonic Helmholtz vibrational free energies $F^{\rm vib}(T)$ at seven different atomic volumes over the relevant range of volume expansion via direct diagonalization of the force constant matrix to obtain the 3N eigenvectors $\mathbf{k}_i$ and eigenfrequencies $\omega_{i}$ in supercells of N=768 ($\theta$) and N=648 ($\theta'$) atoms.  The vibrational free energy is then
 \begin{equation}
@@ -596,6 +616,7 @@ The full anharmonic Gibbs free energy versus temperature for both $\theta'$ and 
     F^{\rm vib}(T) = \frac{1}{N} \sum_{i}^{3N} \left[\frac{\hbar\omega_{i}}{2} + k_{\rm B} T \ln\left[1-\mathrm{e}^{- \beta \hbar\omega_{i}}\right]\right],
     \label{Fqh3}
 \end{equation}
+
 The Gibbs free energy versus temperature is then computed as.....GIVE THE GENERAL RESULT HERE, PLEASE - THIS IS NOT SPECIFIC TO ADP NOR TO ANY PARTICULAR FITTING OF THE VOLUME CURVES, ETC.  WE ARE NOT TOO INTERESTED IN APPROXIMATE METHODS (E.G. STABILITY OF ADP USING ONLY LINEAR VOLUME EXPANSION).  JUST ADDRESS THE FINAL GIBBS FREE ENERGY, STATING THAT AN EXPANSION UP TO THIRD ORDER WAS USED OR SOMETHING LIKE THAT.  FIGURE PART (A) CAN BE SHOWN, BUT ELIMINATE LINEAR FIT (NOT IMPORTANT), DELETE FIGURE PART (B) (IT REMAINS UNCLEAR WHERE THIS ACTUALLY COMES FROM SINCE THERE ARE NO EQUATIONS SHOWN....) AND FIGURE PART(C) CAN SHOW ONLY THE FINAL RESULTS, WHICH ARE GIBBS FREE ENERGIES VS T FOR BOTH NNP AND ADP UP TO WHATEVER TEMPERATURE ADP IS STABLE.  THIS PAPER IS NOT ABOUT THE ADP SO THIS FIGURE SHOULD SHOW BOTH ADP AND NNP RESULTS, OR JUST SHOW NNP RESULTS FOR FIGURES (A) AND (B) AND THEN FINAL RESULTS FOR BOTH NNP AND ADP IN FIGURE (C).  THEN COMMENT ON THE FIGURE - ADP THETA IS UNSTABLE BEYOND XXX K WHILE THE NNP11 SHOWS A TRANSITION AT YYY K.
 YOU CAN COMMENT THAT PREVIOUS ADP ANALYSIS USING A LINEAR APPROXIMATION SUGGESTED THETA WOULD BE STABLE BUT THAT THE FULL ANHARMONIC ANALYSIS SHOWS THE LINEAR RESULT TO BE INCORRECT - THIS IS ABOUT ALL THAT NEEDS TO BE SAID.
 
@@ -638,6 +659,7 @@ We compute the cluster formation energy $\Delta E^{cluster}_{f,(N-X,X)}$ as the 
 \end{equation}
 The DFT values for all the clusters as computed in simulation cells of 256 atoms are shown in Table \ref{table:solute_cluster} along with the NNP and ADP values.  The DFT predicts that clusters favoring the (100) plane are energetically preferable as compared to the other clusters and with the 111111 tetrahedron cluster having positive formation energy.  NNP11 is in reasonable agreement with DFT for most of the clusters, but notably incorrectly predicts a strongly negative formation energy for the 111111 cluster and also over-predicts the stability of the 111 cluster.  NNP10, also shown, is in better agreement with DFT with respect to the relative stability of the clusters.  Across the mean and standard deviation of the 40 NNPs, the deviations seen for NNP11 are also not evident.  The ADP potential shows gross errors, predicting all clusters to be very energetically favorable and predicting the relative stability of the 3-atom clusters incorrectly (as does NNP11 but with a much smaller difference).  Application of ADP to the study of early-stage clustering is thus expected to be very inaccurate while the performance of the NNPs may vary.  We will investigate this next.
 
+IN TABLE 4, NEED TO ADD ADP RESULTS FOR UNRELAXED 4- AND 10- ATOM TETRAHEDRAL CLUSTERS.
 %
 %\begin{figure}[H]%
 %\centering%
@@ -692,11 +714,11 @@ To examine the early-stage clustering under realistic conditions of time and tem
 \begin{equation}
 E^{Mig}_{i-f}= E^{Mig}_{Al} + (E_{f} - E_{i})/2
 \end{equation}
-Where $E_{f}$ and $E_{i}$ are the fully-relaxed final and initial state energies of the entire system.  Table ~\ref{tab:vacmig} shows the migration barriers for the three main transitions in the 5-frequency model as computed via DFT\cite{Mantina2009FirstCoefficients}, NNP11, and also NNP10 that will be discussed further below.  All three migration barriers are well-captured by both NNPs but the approximation above will use only $\omega_0$ for all transitions, including those in and around small clusters the form during the KMC.  Thus, the KMC will satisfy detailed balance and capture the correct thermodynamics but not represent the true time-scale of evolution\cite{Mantina2009FirstCoefficients} of the system. We use a 1000 atom supercell containing one vacancy and execute simulations at 300K with 4\% Cu and at 696K with 5\% Cu using both NNP11 and NNP10, the latter providing a better representation of the energetics of the 3- and 4- atom Cu clusters shown in Table \ref{table:solute_cluster}.
+Where $E_{f}$ and $E_{i}$ are the fully-relaxed final and initial state energies of the entire system.  Table ~\ref{tab:vacmig} shows the migration barriers for the three main transitions [DO NOT USE $\omega$ NOTATION - EITHER USE WORDS OR ADD A SMALL FIGURE AS IN TABLE 4 PICTURES.  WORDS SHOULD BE FINE - E.G. BULK V-AL EXCHANGE , V-CU EXCHANGE, AND V-AL EXCHANGE IN V-AL-CU TRIPLET OR SOMETHING....]  in the 5-frequency model as computed via DFT\cite{Mantina2009FirstCoefficients}, NNP11, and also NNP10 that will be discussed further below.  All three migration barriers are well-captured by both NNPs but the approximation above will use only $\omega_0$ for all transitions, including those in and around small clusters the form during the KMC.  Thus, the KMC will satisfy detailed balance and capture the correct thermodynamics but not represent the true time-scale of evolution\cite{Mantina2009FirstCoefficients} of the system. We use a 1000 atom supercell containing one vacancy and execute simulations at 300K with 4\% Cu and at 696K with 5\% Cu using both NNP11 and NNP10, the latter providing a better representation of the energetics of the 3- and 4- atom Cu clusters shown in Table \ref{table:solute_cluster}.
 
-Figure~\ref{fig:gp1} shows KMC simulations using NNP11 and NNP10 with Al-4\% Cu at 300K after $5\times10^{5}$ KMC steps.  Both systems ultimately form Cu GP-I precipitates consistent with real alloys under similar conditions. NNP11 requires a much longer time, nearly 1 sec, before the GP-I starts to form as compared to NNP10 (less than 0.1 sec), which may reflect competing cluster energetics in NNP11. The NNP10 structure also has a much lower energy, indicating a more-well-formed precipitation state, relative to NNP11, again indicating that the GP-I formation with NNP11 may compete energetically with some other structures before starting to form. Starting the KMC simulation from different initial random geometries and/or other NNPs leads to the formation of GP-1 within a similar time-frame and energy levels. The NNPs thus consistently capture the behavior expected in real materials.  Gorbatov et al. and Ogata et al. have recently presented KMC studies of the same problem, showing similar formation of the GP-I zones.  However, Gorbatov et al. used a cluster expansion method that, while suitable for KMC, cannot be used for any other studies beyond Al-Cu thermodynamics such as plasticity and fracture studies.  Ogata et al. used a new EAM-type Al-Cu potential, and such a potential would require significant more validation across many properties shown here before it could be deemed broadly applicable to the Al-Cu system.  The NNPs show the expected precipitation behavior while also being valid for a wide range of applications.
+Figure~\ref{fig:gp1} shows KMC simulations using NNP11 and NNP10 with Al-4\% Cu at 300K after $5\times10^{5}$ KMC steps.  Both systems ultimately form Cu GP-I precipitates consistent with real alloys under similar conditions. NNP11 requires a much longer time, nearly 1 sec, before the GP-I starts to form as compared to NNP10 (less than 0.1 sec), which may reflect the different competing energetics of the various 3- and 4-atom clusters in NNP11 as compared to NNP10. The NNP10 structure also has a much lower energy, indicating a more-well-formed precipitation state, relative to NNP11, again indicating that the GP-I formation with NNP11 may compete energetically with some other structures at the early stages of formation. Starting the KMC simulation from different initial random geometries and/or other NNPs leads to the formation of GP-I within a similar time-frame and energy levels. The NNPs thus consistently capture the behavior expected in real materials.  Gorbatov et al. and Ogata et al. have recently presented KMC studies of the same problem, showing similar formation of the GP-I zones, and so our results are not unique.  However, Gorbatov et al. used a cluster expansion method that, while suitable for KMC, cannot be used for any other studies beyond Al-Cu thermodynamics such as plasticity and fracture studies.  Ogata et al. used a new EAM-type Al-Cu potential, and such a potential would require significant more validation across many properties shown here before it could be deemed broadly applicable to the Al-Cu system.  The NNPs show the expected precipitation behavior while also being valid for a wide range of applications.
 
-KMC simulations at higher temperature (696K) (and slightly higher Cu concentration (5\%)) reveal pitfalls of some of the NNPs, however.  Using NNP11, a dense block of FCC Cu is formed with a very low energy compared to the initial solid solution.  This spurious behavior arises because the NNP11 has a favorable formation energy for the 3-atom 111 and 4-atom tetrahedral 111111 clusters (table~\ref{table:solute_cluster}) that initiates growth of dense FCC Cu, and that larger dense clusters are increasingly stable.  The KMC observation is rationalized by comparison of the energies of unrelaxed Cu tetrahedral structures as predicted by NNP11, NNP10, ADP, and DFT as shown in Table ZZZ. Dense Cu is highly unfavorable in reality (DFT) but strongly favorable for NNP11 and ADP.  NNP10 does not suffer from the problem of NNP11 or ADP, and KMC simulations at 696K show no precipitation and only sporadic few-atom clusters of Cu, which is consistent with expectations for real Al-Cu under these conditions.  
+KMC simulations at higher temperature (696K) (and slightly higher Cu concentration (5\%)) reveal pitfalls of some of the NNPs, however.  For a few NNPs (NNP 13, XX, YY, ZZ), a dense block of FCC Cu is formed with a very low energy compared to the initial solid solution.  This spurious behavior arises because these NNPs have negative formation energies for the 3-atom 111 and 4-atom tetrahedral 111111 clusters (table~\ref{table:solute_cluster}) and even larger formation energies for larger dense clusters (10 atom cluster shown in table~\ref{table:solute_cluster}.  This incorrect feature favors nucleation and then growth of the dense FCC Cu.  Neither NNP11 nor NNP10 has this error, and so KMC simulations at 696K show no precipitation and only sporadic few-atom clusters of Cu; this is consistent with expectations for real Al-Cu under these conditions.  
 
 The above findings reinforce that careful validation of any potential (NNP or otherwise) must be done within the range of structures for which the NNP will be used.  This result also highlights the use of multiple NNPs for the same problem, especially extracting new structures from a simulation using NNP-X and evaluating them using other NNPs.  Finally, having a family of NNPs can enable mixing and matching of the NNPs in a set of related studies - e.g. NNP10 being used for precipitate evolution in KMC, for instance, while NNP11 (or some other choice) being employed to study dislocations moving through the microstructure established using NNP10.  The close agreement among the family of NNPs for many properties makes such a mix-and-match strategy feasible in a manner that is not as feasible using traditional potentials.
 
@@ -753,18 +775,17 @@ K_{Ie} =
  \sqrt{(0.5\gamma^{USF}+0.145\gamma^{111})o(\theta^{slip},\phi^{Burgers})}/F_{12}(\theta) & \gamma^{111} > 3.45\gamma^{USF}
 \end{cases}
 \end{equation}
-Where $\gamma^{USF}$ is the unstable stacking fault energy, $\gamma^{111}$  is the surface energy of the emission plane, $o(\theta^{slip},\phi^{Burgers})$ is an anisotropic elasticity term dependent on the inclination of the slip plane and Burgers vector, and $F_{12}(\theta^{slip})$ provides the resolved slip on the slip plane oriented at an angle with respect to the crack plane (see Andric \& Curtin\cite{Andric2019AtomisticFracture}).  Using the DFT-computed values of the various material quantities, the critical value is predicted to be $K_{Ie}=0.341$ MPa $\sqrt{\text{m}}$.  A multiscale DFT simulation using the same crack orientation but different DFT parameters\cite{Nair2011} was shown to emit a dislocation at $K_{Ie}$=0.368 (MPa$\sqrt{\text{m}}$).  These provide a basis for assessing the NNPs and demonstrate the range of values that can emerge from DFT assessments.
+Where $\gamma^{USF}$ is the unstable stacking fault energy, $\gamma^{111}$  is the surface energy of the emission plane, $o(\theta^{slip},\phi^{Burgers})$ is an anisotropic elasticity term dependent on the inclination of the slip plane and Burgers vector, and $F_{12}(\theta^{slip})$ provides the resolved slip on the slip plane oriented at an angle with respect to the crack plane (see Andric \& Curtin\cite{Andric2019AtomisticFracture}).  Using the DFT-computed values of the various material quantities, the critical value is predicted to be $K_{Ie}=0.341$ MPa $\sqrt{\text{m}}$.  A multiscale DFT simulation using the same crack orientation but different DFT parameters\cite{Nair2011} was shown to emit a dislocation at $K_{Ie}$=0.368 (MPa$\sqrt{\text{m}}$).  We note further that emission occurs rather than cleavage because the stress intensity for cleavage, related to the surface energy, is larger than $K_{Ie}$.  This background provides a basis for assessing the NNPs and demonstrates the range of values that can emerge from DFT assessments.
 
 We simulate the crack tip behavior following the K-test methodology carefully described by Andric \& Curtin \cite{Andric2019AtomisticFracture}.  We use a simulation cell of size 200*200*10 $\AA^3$, insert a crack terminating along the $z$ direction in the center of the cell, hold boundary atoms fixed at the anistropic elastic predictions for the desired applied stress intensity factor, and allow all interior atoms to relax using the conjugate-gradient method followed by steepest descent with force tolerance 1$e$-05 ev/A.  Successive increments in load level are applied until any notable event occurs at the crack tip.
-All 40 NNPs show partial dislocation emission and with no gross artifacts at the crack tip; a typical example is shown in Figure \ref{fig:fracturedislocation_images}, which is qualitatively similar to results found with many traditional potentials.  The emission event occurs at a critical load of $K_{Ie}=0.354+/-0.007$ (MPa$\sqrt{\text{m}}$) across all 40 NNPs, in very good agreement with the DFT-predicted theoretical value and consistent with the value found in the direct multiscale DFT simulation.  Some variation does arise among the NNPs: 13 NNPs showed emission of only the leading partial (Figure \ref{fig:fracturedislocation_images} (a)) while 27 NNPs showed the emission of a second twinning partial (Figure \ref{fig:fracturedislocation_images} (b) following the leading partial with no increase in the applied load.  Theory and other simulations show that the second emission event should be the twinning partial occurring just behind the first partial, and so this event is expected.  The load for this emission depends on several additional factors, [NOT CLEAR - WOULD NEED FIRST AND TWIN EMISSION FOR THE EA AND MISHIN POTENTIALS - VALUES HERE ARE THE FIRST EMISSION, WHICH IS NOT CONNECTED TO WHETHER THE SECOND EMISSION IS CLOSE?  OR THESE ARE THE MEASURED SECOND EMISSION POINTS (IN WHICH CASE, WHAT ARE THE FIRST EMISSION POINTS? -->] and is very close to $K_{Ie}=0.30$ (MPa$\sqrt{\text{m}}$) when using the Mishin Al potential, and $K_{Ie}=0.34$ (MPa$\sqrt{\text{m}}$) with the Ercolessi-Adams potential \cite{Mishin1999InteratomicCalculations, Ercolesi1994InteratomicMethod, Andric2017NewEmission}.   Overall, the NNPs for pure Al provide a very good representation of the crack tip and the first partial emission process as compared to DFT, theory, and other simulations.
-
+All 40 NNPs show partial dislocation emission and with no gross artifacts at the crack tip; a typical example is shown in Figure \ref{fig:fracturedislocation_images}, which is qualitatively similar to results found with many traditional potentials.  The emission event occurs at a critical load of $K_{Ie}=0.354+/-0.007$ (MPa$\sqrt{\text{m}}$) across all 40 NNPs, in very good agreement with the DFT-predicted theoretical value and consistent with the value found in the direct multiscale DFT simulation.  Some variation does arise among the NNPs: 13 NNPs showed emission of only the leading partial (Figure \ref{fig:fracturedislocation_images} (a)) while 27 NNPs showed the emission of a second twinning partial just behind the crack tip (Figure \ref{fig:fracturedislocation_images} (b) following the leading partial with no increase in the applied load.  The NNP simulations are thus consistent with theory and other simulations showing that this second partial emission event is the next expected event.  The load for this second event depends on several additional factors including the unstable twinning fault energy, and results from EAM Al potentials show that the load is only slightly higher than that required for the first event.  The NNP behavior is thus within the scope of reasonable behavior.  Overall, the NNPs for pure Al provide a very good representation of the crack tip and the first partial emission process as compared to DFT, theory, and other simulations.
 
 
 \section{Conclusion}
 
-We have developed a family of Behler-Parinello-type neural-network potentials (NNPs) for the Al-Cu system based on a comprehensive metallurgically-relevant training dataset based on first-principles DFT.  We have demonstrated the ability of these potentials to predict many different properties of importance in metallurgy, including the many possible phases, solute properties, shearing of precipitates, early stage clustering during annealing, dislocation structures, and crack tip performance.  We emphasize that it is essential to study the performance of any potential across such a broad spectrum of structures if the potential is to be used for realistic studies of atomistic phenomena.  Our examination of the NNPs has included properties that are directly derived from the training dataset, and hence expected to be well-captured by the non-linear regression of the NN method, but moreover a number of properties and structures that were intentionally not in the training dataset.  The methodology is easily extendable to the inclusion of more training data when the current family of NNPs is found to be inaccurate for some problems, as will undoubtedly be the case in the future.  To facilitate such future advances, our entire DFT training set is available along with the DFT provenance necessary to expand the database using the same DFT parameters.
+We have developed a family of Behler-Parinello-type neural-network potentials (NNPs) for the Al-Cu system based on a comprehensive metallurgically-relevant training dataset based on first-principles DFT.  We have demonstrated the ability of these potentials to predict many different properties of importance in metallurgy, including the many possible phases, solute properties, shearing of precipitates, early stage clustering during annealing, dislocation structures, and crack tip performance.  We emphasize that it is essential to study the performance of any potential across such a broad spectrum of structures if the potential is to be used for realistic studies of atomistic phenomena.  Our examination of the NNPs has included properties that are directly derived from the training dataset, and hence expected to be well-captured by the non-linear regression of the NN method.  But, moreover, we investigated a number of properties and structures that were intentionally not in the training dataset.  The methodology is easily extendable to the inclusion of more training data when the current family of NNPs is found to be inaccurate for some problems, as will undoubtedly be the case in the future.  To facilitate such future advances, our entire DFT training set is available along with the DFT provenance necessary to expand the database using the same DFT parameters.
 
-The NNPs developed here have been extensively compared to the newest and widely-used traditional interatomic potential, the Angularly-Dependent Potential from Apostol and Mishin.  While the ADP is based on some underlying physical principles, it has far fewer fitting parameters, and hence performs comparably to the NNPs only for those few properties to which the ADP is fit.  Across the much broader range of properties that are necessary for realistic metallurgical studies, the NNPs here are demonstrably far better, and the ADP gives unphysical behavior for some important situations.  We reiterate that our purpose is not to denigrate the ADP in particular but rather to show that one of the best traditional alloy potentials has many deficiencies and that a machine learning approach overcomes those deficiencies.  The overarching philosophical concern about the use of ML potentials is that they contain no physics and so can possibly fail very badly in situations where a traditional potential might also fail quantitatively but not qualitatively.  With our comparison of the NNP to ADP, this concern can be partially relieved.  Across a much wider spectrum of properties that must be well-represented for realistic atomic-scale studies in alloys, the NNPs perform far better than the ADP and so it is, in fact, use of the ADP that will more likely introduce hidden errors across a wide scope of possible applications, leading to incorrect predictions either qualitatively or quantitatively.  A compromise strategy, recognized in the literature, is to combine a traditional potential such as the ADP with an ML potential that is trained on the difference between the traditional potential and a DFT training set, and such a strategy can be pursued in the future for Al-Cu using our openly-available DFT training set.
+The NNPs developed here have been extensively compared to the newest and widely-used traditional interatomic potential for Al-Cu, the Angularly-Dependent Potential from Apostol and Mishin.  While the ADP is based on some underlying physical principles, it has far fewer fitting parameters and hence performs comparably to the NNPs only for those few properties to which the ADP is fit.  Across the much broader range of properties that are necessary for realistic metallurgical studies, the NNPs here are demonstrably far better, and the ADP gives unphysical behavior for some important situations.  We reiterate that our purpose is not to denigrate the ADP in particular but rather to show that one of the best traditional alloy potentials has many deficiencies and that a machine learning approach overcomes those deficiencies.  The overarching philosophical concern about the use of ML potentials is that they contain no physics and so can possibly fail very badly in situations where a traditional potential might also fail quantitatively but not qualitatively.  With our comparison of the NNP to ADP, this concern can be partially relieved.  Across a much wider spectrum of properties that must be well-represented for realistic atomic-scale studies in alloys, the NNPs perform far better than the ADP and so it is, in fact, use of the ADP that will more likely introduce hidden errors across a wide scope of possible applications, leading to incorrect predictions either qualitatively or quantitatively.  A compromise strategy, emerging in the literature, is to combine a traditional potential such as the ADP with an ML potential that is trained on the difference between the traditional potential and a DFT training set.  Such a strategy can be pursued in the future for Al-Cu using our openly-available DFT training set.
 
 The family of NNPs is not perfect.  Most notably, $C_{44}$ of Al has substantial errors even with careful inclusion of relevant structures.
 Across our family of NNPs, and adding structures intended to bias the optimization toward a better representation of $C_{44}$, we could not achieve an error below 10\%.  Similarly, we could not reduce the errors on solute pair energies below ~20meV, again despite the careful inclusion of structures in the training set.  These limitations might be resolved through the use of other ML methods, other optimization methods based on energy differences between structures rather than absolute energies, a larger set of descriptors for the atomic environments, etc., and all of these can also be pursued in the future using our openly-available DFT training set.
